@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="rich_black_FOGRA_29">#001219</color>
+    <color name="blue_sapphire">#005F73</color>
+    <color name="viridian_green">#0A9396</color>
+    <color name="middle_blue_green">#94D2BD</color>
+    <color name="medium_champagne">#E9D8A6</color>
+    <color name="gamboge">#EE9B00</color>
+    <color name="alloy_orange">#CA6702</color>
+    <color name="mahogany">#BB3E03</color>
+    <color name="rufous">#AE2012</color>
+    <color name="ruby_red">#9B2226</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
