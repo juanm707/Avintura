@@ -100,4 +100,5 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="profile">Profile</string>
+    <string name="search">Search</string>
 </resources>

@@ -8,4 +8,11 @@
         android:icon="@drawable/ic_baseline_account_box_24"
         android:title="@string/profile"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_search"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_round_search_24"
+        android:title="@string/search"
+        app:showAsAction="always" />
 </menu>

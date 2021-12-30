@@ -9,8 +9,11 @@
     <color name="gamboge">#EE9B00</color>
     <color name="alloy_orange">#CA6702</color>
     <color name="mahogany">#BB3E03</color>
+    <color name="pastel_pink">#E99B9D</color>
     <color name="rufous">#AE2012</color>
     <color name="ruby_red">#9B2226</color>
+    <color name="mauve">#E0AAFF</color>
+    <color name="persian_indigo">#3C096C</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
