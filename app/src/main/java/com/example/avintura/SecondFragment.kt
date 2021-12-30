@@ -39,7 +39,7 @@ class SecondFragment : Fragment() {
         binding.toolbarSecond.setupWithNavController(navController, appBarConfiguration)
 
         // Adding toolbar to fragment, this way! vvvv
-        // if using an activity action bar, app bar, tool bar etc then need to do setHasOptionsMenu(True)
+        // if using an ACTIVITY OWNED action bar, app bar, tool bar etc then need to do setHasOptionsMenu(True) in oncreate
         // set support action bar in activity and then override menthods create options and on option item selected etc...
         // https://stackoverflow.com/questions/20226897/oncreateoptionsmenu-not-called-in-fragment
         // fragment owned app bar
