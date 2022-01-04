@@ -101,4 +101,8 @@
     </string>
     <string name="profile">Profile</string>
     <string name="search">Search</string>
+    <string name="wineries">Wineries</string>
+    <string name="dining">Dining</string>
+    <string name="hotel">Hotel</string>
+    <string name="and_spa">and Spa</string>
 </resources>

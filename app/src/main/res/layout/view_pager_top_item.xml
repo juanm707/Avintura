@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/page">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="8dp"
+        app:cardElevation="2dp">
+
+        <ImageView
+            android:id="@+id/business_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="@color/viridian_green"
+            android:contentDescription="Picture"
+            android:scaleType="centerCrop" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:background="@drawable/scrim_bottom"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/business_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:shadowColor="@color/black"
+                android:shadowRadius="8"
+                android:text="Sample Location"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:id="@+id/business_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="1dp"
+                android:src="@drawable/stars_small_0"
+                app:layout_constraintStart_toStartOf="@+id/business_name"
+                app:layout_constraintTop_toBottomOf="@+id/business_name" />
+
+            <TextView
+                android:id="@+id/review_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:shadowColor="@color/black"
+                android:shadowRadius="8"
+                android:text="0 Reviews"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/business_rating"
+                app:layout_constraintStart_toEndOf="@+id/business_rating"
+                app:layout_constraintTop_toTopOf="@+id/business_rating" />
+
+            <ImageView
+                android:id="@+id/favorite_icon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_baseline_favorite_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/bright_maroon" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

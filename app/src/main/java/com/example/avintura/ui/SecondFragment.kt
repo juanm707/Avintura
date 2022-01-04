@@ -1,14 +1,18 @@
-package com.example.avintura
+package com.example.avintura.ui
 
+import android.animation.ObjectAnimator
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.example.avintura.R
 import com.example.avintura.databinding.FragmentSecondBinding
 
 /**
@@ -61,5 +65,16 @@ class SecondFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun colorizer(view: View) {
+        val animator = ObjectAnimator.ofArgb(view, "backgroundColor",
+            Color.BLACK, Color.RED
+        )
+        animator.duration = 500
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        // animator.disableViewDuringAnimation(colorizeButton)
+        animator.start()
     }
 }
