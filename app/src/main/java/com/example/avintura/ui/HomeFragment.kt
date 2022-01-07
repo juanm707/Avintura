@@ -43,10 +43,8 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
 
         setUpNavigation()
         setUpToolbar()
-        homeViewModel.businesses.observe(viewLifecycleOwner, { businesses ->
-            binding.progressCircular.visibility = View.GONE
-            binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(businesses, requireContext(), this)
-        })
+        setBusinessesObserver()
+        setConnectionStatusObserver()
     }
 
     override fun onDestroyView() {
@@ -72,7 +70,26 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         }
     }
 
+    private fun setBusinessesObserver() {
+        binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this)
+        homeViewModel.businesses.observe(viewLifecycleOwner, { businesses ->
+            binding.progressCircular.visibility = View.GONE
+            (binding.homeViewPager.adapter as ViewPagerTopRecyclerViewAdapter).submitList(businesses)
+        })
+    }
+
+    private fun setConnectionStatusObserver() {
+        homeViewModel.connectionStatus.observe(viewLifecycleOwner, {
+            if (it)
+                Toast.makeText(requireContext(), "BAD CONNECTION", Toast.LENGTH_SHORT).show()
+        })
+    }
+
     override fun onBusinessClick(position: Int) {
        Toast.makeText(requireContext(), "Clicked on position: $position", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onFavoriteClick(position: Int) {
+        homeViewModel.updateFavorite(position)
     }
 }

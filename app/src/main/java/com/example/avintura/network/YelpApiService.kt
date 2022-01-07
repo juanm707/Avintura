@@ -31,7 +31,7 @@ interface YelpApiService {
         @Query("location") location: String,
         @Query("offset") offset: Int,
         @Query("sort_by") sortBy: String = "best_match",
-        @Query("limit") limit: Int = 50
+        @Query("limit") limit: Int = 10
     ) : YelpBusinessContainer
 
 //    @GET("businesses/{id}")

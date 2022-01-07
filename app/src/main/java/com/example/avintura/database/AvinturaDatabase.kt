@@ -5,12 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.avintura.database.dao.BusinessDao
+import com.example.avintura.database.dao.FavoriteDao
 import kotlinx.coroutines.CoroutineScope
 
-@Database(entities = [Business::class], version = 1, exportSchema = false)
+@Database(entities = [Business::class, Favorite::class], version = 1, exportSchema = false)
 abstract class AvinturaDatabase : RoomDatabase() {
 
     abstract fun businessDao(): BusinessDao
+    abstract fun favoriteDao(): FavoriteDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the

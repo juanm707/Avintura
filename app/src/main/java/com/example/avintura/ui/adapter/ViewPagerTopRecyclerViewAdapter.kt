@@ -1,21 +1,41 @@
 package com.example.avintura.ui.adapter
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.avintura.R
+import com.example.avintura.database.BusinessWithFavoriteStatus
 import com.example.avintura.domain.AvinturaBusiness
-import com.example.avintura.util.getStarRatingRegularDrawable
+import com.example.avintura.util.*
 
 
-class ViewPagerTopRecyclerViewAdapter(private val businesses: List<AvinturaBusiness>,
-                                      private val context: Context,
-                                      private val onBusinessClickListener: OnBusinessClickListener) : RecyclerView.Adapter<ViewPagerTopRecyclerViewAdapter.TopBusinessViewHolder>() {
+class ViewPagerTopRecyclerViewAdapter(private val context: Context,
+                                      private val onBusinessClickListener: OnBusinessClickListener) : ListAdapter<AvinturaBusiness, ViewPagerTopRecyclerViewAdapter.TopBusinessViewHolder>(DiffCallback) {
+
+    companion object DiffCallback : DiffUtil.ItemCallback<AvinturaBusiness>() {
+        override fun areItemsTheSame(oldItem: AvinturaBusiness, newItem: AvinturaBusiness): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: AvinturaBusiness, newItem: AvinturaBusiness): Boolean {
+            return ((oldItem.name == newItem.name) && (oldItem.rating == newItem.rating) &&
+                    (oldItem.city == newItem.city) && (oldItem.reviewCount == newItem.reviewCount) &&
+                    (oldItem.imageUrl == newItem.imageUrl) && (oldItem.favorite == newItem.favorite))
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopBusinessViewHolder {
         val layout = LayoutInflater.from(parent.context).inflate(R.layout.view_pager_top_item, parent, false)
@@ -23,18 +43,29 @@ class ViewPagerTopRecyclerViewAdapter(private val businesses: List<AvinturaBusin
     }
 
     override fun onBindViewHolder(holder: TopBusinessViewHolder, position: Int) {
-        val business = businesses[position]
-        holder.name.text = business.name
+        val business = currentList[position]
+
+        holder.name.text = "${position+1}. ${business.name}"
         holder.starRating.setImageDrawable(business.rating.getStarRatingRegularDrawable(context))
         holder.reviewCount.text = "${business.reviewCount} Reviews"
+        holder.city.text = business.city
+
         holder.picture.load(business.imageUrl) {
             crossfade(true)
             crossfade(500)
         }
+
+        holder.favoriteIcon.setFavoriteDrawable(context, business.favorite, true)
+        holder.favoriteIcon.setOnClickListener {
+            holder.favoriteIcon.setFavoriteDrawable(context, business.favorite, false)
+            business.favorite = !business.favorite
+            holder.favoriteIcon.scaleHeart()
+            onBusinessClickListener.onFavoriteClick(position)
+        }
     }
 
     override fun getItemCount(): Int {
-        return businesses.size
+        return currentList.size
     }
 
     class TopBusinessViewHolder(itemView: View, private val onBusinessClickListener: OnBusinessClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -42,7 +73,8 @@ class ViewPagerTopRecyclerViewAdapter(private val businesses: List<AvinturaBusin
         val picture: ImageView = itemView.findViewById(R.id.business_image)
         val starRating: ImageView = itemView.findViewById(R.id.business_rating)
         val reviewCount: TextView = itemView.findViewById(R.id.review_count)
-
+        val city: TextView = itemView.findViewById(R.id.business_city)
+        val favoriteIcon: ImageView = itemView.findViewById(R.id.favorite_icon)
 
         init {
             itemView.setOnClickListener(this)
@@ -55,5 +87,6 @@ class ViewPagerTopRecyclerViewAdapter(private val businesses: List<AvinturaBusin
 
     interface OnBusinessClickListener {
         fun onBusinessClick(position: Int)
+        fun onFavoriteClick(position: Int)
     }
 }

@@ -13,7 +13,19 @@ data class YelpBusiness(
     val name: String,
     val rating: Float,
     @Json(name = "image_url") val imageUrl: String,
-    @Json(name = "review_count") val reviewCount: Int
+    @Json(name = "review_count") val reviewCount: Int,
+    val location: Location
+)
+
+data class Location(
+    val address1: String,
+    val address2: String?,
+    val address3: String?,
+    val city: String,
+    @Json(name = "zip_code") val zipCode: String,
+    val country: String,
+    val state: String,
+    @Json(name = "display_address") val displayAddress: List<String>
 )
 
 /**
@@ -26,7 +38,8 @@ fun YelpBusinessContainer.asDatabaseModel(): List<Business> {
             it.name,
             it.rating,
             it.imageUrl,
-            it.reviewCount
+            it.reviewCount,
+            it.location.city
         )
     }
 }

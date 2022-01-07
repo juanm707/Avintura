@@ -5,5 +5,7 @@ data class AvinturaBusiness(
     val name: String,
     val rating: Float,
     val imageUrl: String,
-    val reviewCount: Int
+    val reviewCount: Int,
+    val city: String,
+    var favorite: Boolean
 )
