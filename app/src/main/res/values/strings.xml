@@ -106,4 +106,15 @@
     <string name="hotel">Hotel</string>
     <string name="and_spa">and Spa</string>
     <string name="yelp_logo">Yelp Logo</string>
+    <plurals name="favorite_count">
+        <!--
+             As a developer, you should always supply "one" and "other"
+             strings. Your translators will know which strings are actually
+             needed for their language. Always include %d in "one" because
+             translators will need to use %d for languages where "one"
+             doesn't mean 1 (as explained above).
+          -->
+        <item quantity="one">You have %d favorite</item>
+        <item quantity="other">You have %d favorites</item>
+    </plurals>
 </resources>

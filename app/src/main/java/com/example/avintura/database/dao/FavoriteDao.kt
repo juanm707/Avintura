@@ -8,6 +8,9 @@ import com.example.avintura.database.Favorite
 @Dao
 interface FavoriteDao {
 
+    @Query("SELECT COUNT(favorite) FROM Favorite WHERE favorite = 1")
+    fun getFavoriteCount(): LiveData<Int>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(favorite: Favorite)
 

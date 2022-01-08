@@ -15,8 +15,11 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
     private val _connectionStatusError = MutableLiveData(false)
     val connectionStatus: LiveData<Boolean> = _connectionStatusError
 
+    // TOP RESULTS
     private val _businesses = MutableLiveData<List<AvinturaBusiness>>()
     val businesses: LiveData<List<AvinturaBusiness>> = _businesses
+
+    val favoriteCount = repository.getFavoriteCount()
 
     init {
         refreshDataFromNetwork()
@@ -30,6 +33,8 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
                 _businesses.value = repository.getBusinesses()
             }
             catch (e: Exception) {
+                // if request to update data failed, use whats in DB if any
+                _businesses.value = repository.getBusinesses()
                 if (businesses.value.isNullOrEmpty())
                     _connectionStatusError.value = true
             }

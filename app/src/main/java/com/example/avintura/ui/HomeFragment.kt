@@ -1,12 +1,12 @@
 package com.example.avintura.ui
 
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -16,8 +16,6 @@ import com.example.avintura.databinding.FragmentHomeBinding
 import com.example.avintura.ui.adapter.ViewPagerTopRecyclerViewAdapter
 import com.example.avintura.viewmodels.HomeViewModel
 import com.example.avintura.viewmodels.HomeViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.withContext
 
 class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener {
 
@@ -45,6 +43,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         setUpToolbar()
         setBusinessesObserver()
         setConnectionStatusObserver()
+        setFavoriteCountObserver()
     }
 
     override fun onDestroyView() {
@@ -78,6 +77,13 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         })
     }
 
+    private fun setFavoriteCountObserver() {
+        homeViewModel.favoriteCount.observe(viewLifecycleOwner, { count ->
+            binding.favoriteText.text = resources.getQuantityString(R.plurals.favorite_count, count, count)
+        })
+
+    }
+
     private fun setConnectionStatusObserver() {
         homeViewModel.connectionStatus.observe(viewLifecycleOwner, {
             if (it)
@@ -87,6 +93,8 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
 
     override fun onBusinessClick(position: Int) {
        Toast.makeText(requireContext(), "Clicked on position: $position", Toast.LENGTH_SHORT).show()
+        val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment()
+        findNavController().navigate(action)
     }
 
     override fun onFavoriteClick(position: Int) {

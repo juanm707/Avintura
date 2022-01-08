@@ -13,15 +13,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.avintura.R
-import com.example.avintura.databinding.FragmentSecondBinding
+import com.example.avintura.databinding.FragmentBusinessDetailBinding
 
 /**
- * A simple [Fragment] subclass as the second destination in the navigation.
+ * Fragment that shows an individual business detail based on the passed id
  */
-class SecondFragment : Fragment() {
+class BusinessDetailFragment : Fragment() {
 
-    private var _binding: FragmentSecondBinding? = null
-
+    private var _binding: FragmentBusinessDetailBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -31,16 +30,17 @@ class SecondFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentSecondBinding.inflate(inflater, container, false)
+        _binding = FragmentBusinessDetailBinding.inflate(inflater, container, false)
         return binding.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val navController = findNavController()
         val appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.toolbarSecond.setupWithNavController(navController, appBarConfiguration)
+        //binding.toolbarSecond.setupWithNavController(navController, appBarConfiguration)
 
         // Adding toolbar to fragment, this way! vvvv
         // if using an ACTIVITY OWNED action bar, app bar, tool bar etc then need to do setHasOptionsMenu(True) in oncreate
@@ -50,16 +50,16 @@ class SecondFragment : Fragment() {
         // https://developer.android.com/guide/navigation/navigation-ui#support_app_bar_variations
         // https://developer.android.com/guide/fragments/appbar#fragment
 
-        binding.toolbarSecond.inflateMenu(R.menu.menu_main)
-        binding.toolbarSecond.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.action_profile -> {
-                    Toast.makeText(requireContext(), "Settings selected", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> super.onOptionsItemSelected(item)
-            }
-        }
+//        binding.toolbarSecond.inflateMenu(R.menu.menu_main)
+//        binding.toolbarSecond.setOnMenuItemClickListener { item ->
+//            when (item.itemId) {
+//                R.id.action_profile -> {
+//                    Toast.makeText(requireContext(), "Settings selected", Toast.LENGTH_SHORT).show()
+//                    true
+//                }
+//                else -> super.onOptionsItemSelected(item)
+//            }
+//        }
     }
 
     override fun onDestroyView() {

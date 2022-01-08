@@ -51,6 +51,11 @@ class AvinturaRepository(private val businessDao: BusinessDao,
     }
 
     @WorkerThread
+    fun getFavoriteCount(): LiveData<Int> {
+        return favoriteDao.getFavoriteCount()
+    }
+
+    @WorkerThread
     suspend fun insert(favorite: Favorite) {
         return favoriteDao.insert(favorite)
     }
