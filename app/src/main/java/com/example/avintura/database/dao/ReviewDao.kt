@@ -5,21 +5,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.avintura.database.Business
-import com.example.avintura.database.BusinessWithFavoriteStatus
+import com.example.avintura.database.*
 import kotlinx.coroutines.flow.Flow
 
 // https://developer.android.com/training/data-storage/room/async-queries#one-shot
 // One-shot queries must be suspended, while observable queries are either flow or live data
 @Dao
-interface BusinessDao {
+interface ReviewDao {
 
-    @Query("SELECT b.*, f.favorite FROM Business b LEFT JOIN Favorite f ON f.id = b.id")
-    suspend fun getBusinesses(): List<BusinessWithFavoriteStatus>
+    @Query("SELECT * FROM Review r WHERE r.businessId = :businessId")
+    suspend fun getReviews(businessId: String): List<Review>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(businesses: List<Business>)
+    suspend fun insertAll(reviews: List<Review>)
 
-    @Query("DELETE FROM Business")
+    @Query("DELETE FROM BusinessDetail")
     suspend fun deleteAll()
 }

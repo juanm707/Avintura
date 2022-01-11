@@ -22,5 +22,8 @@
         android:id="@+id/BusinessDetailFragment"
         android:name="com.example.avintura.ui.BusinessDetailFragment"
         tools:layout="@layout/fragment_business_detail">
+        <argument
+            android:name="id"
+            app:argType="string" />
     </fragment>
 </navigation>

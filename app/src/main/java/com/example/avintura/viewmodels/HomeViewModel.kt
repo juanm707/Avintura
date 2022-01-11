@@ -21,6 +21,8 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
 
     val favoriteCount = repository.getFavoriteCount()
 
+    var position: Int = 0
+
     init {
         refreshDataFromNetwork()
     }
@@ -33,7 +35,7 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
                 _businesses.value = repository.getBusinesses()
             }
             catch (e: Exception) {
-                // if request to update data failed, use whats in DB if any
+                Log.d("NetworkError", e.message.toString()) // if request to update data failed, use whats in DB if any
                 _businesses.value = repository.getBusinesses()
                 if (businesses.value.isNullOrEmpty())
                     _connectionStatusError.value = true

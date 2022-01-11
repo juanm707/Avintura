@@ -12,6 +12,10 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.example.avintura.R
+import com.example.avintura.domain.AvinturaHour
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.NoSuchElementException
 
 fun Float.getStarRatingRegularDrawable(context: Context): Drawable? {
     return when (this) {
@@ -107,4 +111,64 @@ private fun ImageView.setBorderFavorite(context: Context,) {
 private fun ImageView.setFilledFavorite(context: Context,) {
     val unwrappedDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_favorite_24)
     this.setFavoriteDrawableColored(context, unwrappedDrawable)
+}
+
+fun getHoursOfOperationToday(hours: List<AvinturaHour>): String {
+    // Yelp     0 Monday, 1 Tuesday, 2 Wednesday, 3 Thursday,  4 Friday,   5 Saturday, 6 Sunday
+    // Calendar 1 Sunday, 2 Monday,  3 Tuesday,   4 Wednesday, 5 Thursday, 6 Friday,   7 Saturday
+    val today = Calendar.getInstance(Locale.getDefault())
+    val dayOfWeek = today.get(Calendar.DAY_OF_WEEK)
+
+    val todayYelpDay = if (dayOfWeek == 1) 6 else dayOfWeek - 2
+    return try {
+        val todayHours = hours.first {
+            it.day == todayYelpDay
+        }
+        val hoursOpenToday = getHoursOfOperation(todayHours)
+
+        val sdf = SimpleDateFormat("E", Locale.US)
+        val day = sdf.format(today.time)
+
+        "$day, $hoursOpenToday"
+
+    } catch (e: NoSuchElementException) {
+        "No hours today"
+    }
+}
+
+fun getHoursOfOperation(hour: AvinturaHour): String {
+    val start = getTimeAndPeriod(hour.startHour)
+    val end = getTimeAndPeriod(hour.endHour)
+    return "$start - $end"
+}
+
+private fun getTimeAndPeriod(time: String): String {
+    val period: String
+    var hour = time.substring(0, 2).toInt()
+
+    if (hour >= 12) {
+        period = "PM"
+        if (hour == 12) {
+            return "12:${time.substring(2, 4)} $period"
+        } else {
+            return "${hour - 12}:${time.substring(2, 4)} $period"
+        }
+    } else {
+        period = "AM"
+        if (hour == 0) hour = 12
+        return "$hour:${time.substring(2, 4)} $period"
+    }
+}
+
+fun getDay(day: Int): String {
+    return when (day) {
+        0 -> "Mon"
+        1 -> "Tue"
+        2 -> "Wed"
+        3 -> "Thu"
+        4 -> "Fri"
+        5 -> "Sat"
+        6 -> "Sun"
+        else -> ""
+    }
 }

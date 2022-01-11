@@ -1,6 +1,7 @@
 package com.example.avintura.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,6 +75,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         homeViewModel.businesses.observe(viewLifecycleOwner, { businesses ->
             binding.progressCircular.visibility = View.GONE
             (binding.homeViewPager.adapter as ViewPagerTopRecyclerViewAdapter).submitList(businesses)
+            binding.homeViewPager.setCurrentItem(homeViewModel.position, false)
         })
     }
 
@@ -92,9 +94,11 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     }
 
     override fun onBusinessClick(position: Int) {
-       Toast.makeText(requireContext(), "Clicked on position: $position", Toast.LENGTH_SHORT).show()
-        val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment()
-        findNavController().navigate(action)
+        if (homeViewModel.businesses.value != null) {
+            homeViewModel.position = position
+            val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment(homeViewModel.businesses.value!![position].id)
+            findNavController().navigate(action)
+        }
     }
 
     override fun onFavoriteClick(position: Int) {

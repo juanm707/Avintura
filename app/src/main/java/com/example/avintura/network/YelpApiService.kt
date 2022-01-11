@@ -31,20 +31,20 @@ interface YelpApiService {
         @Query("location") location: String,
         @Query("offset") offset: Int,
         @Query("sort_by") sortBy: String = "best_match",
-        @Query("limit") limit: Int = 10
+        @Query("limit") limit: Int = 50
     ) : YelpBusinessContainer
 
-//    @GET("businesses/{id}")
-//    suspend fun getBusiness(
-//        @Header("Authorization") authHeader: String = API_KEY,
-//        @Path("id") id: String
-//    ) : BusinessDetail
-//
-//    @GET("businesses/{id}/reviews")
-//    suspend fun getReviews(
-//        @Header("Authorization") authHeader: String = API_KEY,
-//        @Path("id") id: String
-//    ) : Reviews
+    @GET("businesses/{id}")
+    suspend fun getBusiness(
+        @Header("Authorization") authHeader: String = "Bearer $API_KEY",
+        @Path("id") id: String
+    ) : YelpBusinessDetail
+
+    @GET("businesses/{id}/reviews")
+    suspend fun getReviews(
+        @Header("Authorization") authHeader: String = "Bearer $API_KEY",
+        @Path("id") id: String
+    ) : YelpReviewContainer
 }
 
 object YelpAPINetwork {
