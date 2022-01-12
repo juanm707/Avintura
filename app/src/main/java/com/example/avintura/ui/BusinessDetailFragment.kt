@@ -3,7 +3,9 @@ package com.example.avintura.ui
 import android.animation.ObjectAnimator
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,12 +13,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.request.ImageRequest
@@ -46,11 +52,13 @@ class BusinessDetailFragment : Fragment() {
     private lateinit var businessDetailViewModel: BusinessDetailViewModel
     private lateinit var businessDetailViewModelFactory: BusinessDetailViewModelFactory
 
-
     private var _binding: FragmentBusinessDetailBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var favoriteIcon: Drawable
+    private lateinit var unFavoriteIcon: Drawable
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,7 +75,6 @@ class BusinessDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setUpToolbar()
         setUpNavigation()
         setUpBusinessObserver()
@@ -196,8 +203,7 @@ class BusinessDetailFragment : Fragment() {
             listener(
                 // pass two arguments
                 onSuccess = { _, _ ->
-                    //setPaletteColors()
-                    println("Success coil load")
+                    setPaletteColors()
                 },
                 onError = { request: ImageRequest, throwable: Throwable ->
 
@@ -219,7 +225,11 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setPhoneData(business: AvinturaBusinessDetail) {
-        binding.phoneNumber.text = business.displayPhone
+        if (business.displayPhone == "") {
+            binding.phoneNumber.text = "No Phone Number"
+            binding.callButton.isEnabled = false
+        } else
+            binding.phoneNumber.text = business.displayPhone
 
         // to call need permission? ACTION_CALL?
         binding.callButton.setOnClickListener {
@@ -233,6 +243,7 @@ class BusinessDetailFragment : Fragment() {
 
     private fun setAddressAndNavigation(business: AvinturaBusinessDetail) {
         if (business.displayAddress != null) {
+
             val parsedAddress = business.displayAddress.split("|") // should split into two, street and city
             binding.basicAddressText.text = parsedAddress[STREET_ADDRESS_INDEX]
             binding.cityAddressText.text = parsedAddress[CITY_ADDRESS_INDEX]
@@ -291,12 +302,108 @@ class BusinessDetailFragment : Fragment() {
         binding.nestedScrollView.smoothScrollTo(0, scrollTo)
     }
 
-    private fun colorizer(view: View) {
+    private fun setPaletteColors() {
+        val bitmap = binding.imageViewCollapsing.drawable.toBitmap()
+        Palette.from(bitmap).generate { palette ->
+            if (palette != null) {
+                val vibrantSwatch = palette.vibrantSwatch
+                val lightVibrantSwatch = palette.lightVibrantSwatch
+                val darkVibrantSwatch = palette.darkVibrantSwatch
+                val mutedSwatch = palette.mutedSwatch
+                val lightMutedSwatch = palette.lightMutedSwatch
+                val darkMutedSwatch = palette.darkMutedSwatch
+
+                if (lightVibrantSwatch != null)
+                    animateBackgroundColorChange(binding.nestedScrollView, lightVibrantSwatch.rgb)
+
+                if (vibrantSwatch != null) {
+                    // Title texts on cards
+                    setCardViewTitleColor(vibrantSwatch.rgb)
+
+                    // tool bar color
+                    binding.collapsingToolbarLayout.apply {
+                        setContentScrimColor(vibrantSwatch.rgb)
+                        setCollapsedTitleTextColor(vibrantSwatch.titleTextColor)
+                    }
+
+                    // back arrow icon color
+                    val icon = (binding.detailToolbar.navigationIcon as DrawerArrowDrawable)
+                    icon.color = vibrantSwatch.titleTextColor
+
+                    // overflow icon color
+                    binding.detailToolbar.overflowIcon?.setTint(vibrantSwatch.titleTextColor)
+
+                    setNavigationButtonColor(vibrantSwatch.titleTextColor, vibrantSwatch.rgb)
+
+                    setFavoriteMenuItemColor(vibrantSwatch.titleTextColor)
+                }
+
+                if (darkVibrantSwatch != null) {
+                    // status bar color
+                    setStatusBarColor(darkVibrantSwatch.rgb)
+
+                    binding.navigationButton.apply {
+                        rippleColor = darkVibrantSwatch.rgb
+                    }
+
+                    DrawableCompat.setTint(
+                        DrawableCompat.wrap(binding.phoneIcon.drawable),
+                        darkVibrantSwatch.rgb
+                    )
+                }
+            }
+        }
+    }
+
+    private fun animateBackgroundColorChange(view: View, color: Int) {
         val animator = ObjectAnimator.ofArgb(view, "backgroundColor",
-            ContextCompat.getColor(requireContext(), R.color.middle_blue_green), Color.RED
+            ContextCompat.getColor(requireContext(), R.color.middle_blue_green), color
         )
-        animator.duration = 1000
-        // animator.disableViewDuringAnimation(colorizeButton)
+        animator.duration = 500
         animator.start()
+    }
+
+    private fun setStatusBarColor(color: Int) {
+        // status bar color
+        val window = requireActivity().window
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        // window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = color
+    }
+
+    private fun setCardViewTitleColor(color: Int) {
+        binding.detailTitle.setTextColor(color)
+        binding.photosTitle.setTextColor(color)
+        binding.reviewTitle.setTextColor(color)
+        binding.locationTitle.setTextColor(color)
+        binding.hoursTitle.setTextColor(color)
+        binding.contactTitle.setTextColor(color)
+    }
+
+    private fun setNavigationButtonColor(colorIcon: Int, colorBackground: Int) {
+        binding.navigationButton.apply {
+            drawable.apply {
+                setTint(colorIcon)
+            }
+            backgroundTintList = ColorStateList.valueOf(colorBackground)
+        }
+    }
+
+    private fun setFavoriteMenuItemColor(color: Int) {
+        // fav icon color
+        val heartItem = binding.detailToolbar.menu.findItem(R.id.action_add)
+        val favoriteStatus = businessDetailViewModel.business.value?.businessBasic?.favorite
+
+        if (favoriteStatus != null) {
+            if (favoriteStatus) {
+                heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_24)
+            } else {
+                heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_border_24)
+            }
+            DrawableCompat.setTint(
+                DrawableCompat.wrap(heartItem.icon),
+                color
+            )
+        }
     }
 }

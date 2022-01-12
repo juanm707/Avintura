@@ -1,11 +1,13 @@
 package com.example.avintura.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -39,7 +41,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.blue_sapphire)
         setUpNavigation()
         setUpToolbar()
         setBusinessesObserver()
@@ -83,7 +85,6 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         homeViewModel.favoriteCount.observe(viewLifecycleOwner, { count ->
             binding.favoriteText.text = resources.getQuantityString(R.plurals.favorite_count, count, count)
         })
-
     }
 
     private fun setConnectionStatusObserver() {
