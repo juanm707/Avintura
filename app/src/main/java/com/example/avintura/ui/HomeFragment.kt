@@ -97,7 +97,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     override fun onBusinessClick(position: Int) {
         if (homeViewModel.businesses.value != null) {
             homeViewModel.position = position
-            val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment(homeViewModel.businesses.value!![position].id)
+            val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment(homeViewModel.businesses.value!![position].id, homeViewModel.businesses.value!![position].name)
             findNavController().navigate(action)
         }
     }

@@ -1,5 +1,7 @@
 package com.example.avintura.ui
 
+import android.animation.AnimatorSet
+import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -12,6 +14,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.content.ContextCompat
@@ -52,6 +55,8 @@ class BusinessDetailFragment : Fragment() {
     private lateinit var businessDetailViewModel: BusinessDetailViewModel
     private lateinit var businessDetailViewModelFactory: BusinessDetailViewModelFactory
 
+    private lateinit var businessName: String
+
     private var _binding: FragmentBusinessDetailBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -69,12 +74,14 @@ class BusinessDetailFragment : Fragment() {
             (requireActivity().application as AvinturaApplication).repository,
             BusinessDetailFragmentArgs.fromBundle(requireArguments()).id
         )
+        businessName = BusinessDetailFragmentArgs.fromBundle(requireArguments()).name
         businessDetailViewModel = ViewModelProvider(this, businessDetailViewModelFactory)[BusinessDetailViewModel::class.java]
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.collapsingToolbarLayout.title = businessName
         setUpToolbar()
         setUpNavigation()
         setUpBusinessObserver()
@@ -158,11 +165,11 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setUpReviewsObserver() {
-        // Todo sort reviews by date and maybe change color of text based on palette?
+        // Todo sort reviews by date
+        binding.reviewCardView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
         businessDetailViewModel.reviews.observe(viewLifecycleOwner, { reviews ->
             binding.reviewRecyclerView.apply {
                 layoutManager = LinearLayoutManager(requireContext())
-                setHasFixedSize(true)
                 adapter = ReviewRecyclerViewAdapter(reviews, requireContext())
             }
         })
@@ -195,14 +202,12 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setCollapsingToolbarData(business: AvinturaBusinessDetail) {
-        binding.collapsingToolbarLayout.title = business.businessBasic.name
-
         binding.imageViewCollapsing.load(business.businessBasic.imageUrl) {
             crossfade(true)
             crossfade(500)
             listener(
                 // pass two arguments
-                onSuccess = { _, _ ->
+                onSuccess = { _, m ->
                     setPaletteColors()
                 },
                 onError = { request: ImageRequest, throwable: Throwable ->
@@ -233,7 +238,7 @@ class BusinessDetailFragment : Fragment() {
 
         // to call need permission? ACTION_CALL?
         binding.callButton.setOnClickListener {
-            val callIntent: Intent = Intent(
+            val callIntent = Intent(
                 Intent.ACTION_DIAL,
                 Uri.parse("tel:${business.phone}")
             )
@@ -243,7 +248,6 @@ class BusinessDetailFragment : Fragment() {
 
     private fun setAddressAndNavigation(business: AvinturaBusinessDetail) {
         if (business.displayAddress != null) {
-
             val parsedAddress = business.displayAddress.split("|") // should split into two, street and city
             binding.basicAddressText.text = parsedAddress[STREET_ADDRESS_INDEX]
             binding.cityAddressText.text = parsedAddress[CITY_ADDRESS_INDEX]
@@ -363,6 +367,14 @@ class BusinessDetailFragment : Fragment() {
         animator.start()
     }
 
+    private fun animateTextColorChange(textView: TextView, color: Int): ObjectAnimator? {
+        val animator = ObjectAnimator.ofArgb(textView, "textColor",
+            ContextCompat.getColor(requireContext(), R.color.blue_sapphire), color
+        )
+        animator.duration = 500
+       return animator
+    }
+
     private fun setStatusBarColor(color: Int) {
         // status bar color
         val window = requireActivity().window
@@ -372,12 +384,16 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setCardViewTitleColor(color: Int) {
-        binding.detailTitle.setTextColor(color)
-        binding.photosTitle.setTextColor(color)
-        binding.reviewTitle.setTextColor(color)
-        binding.locationTitle.setTextColor(color)
-        binding.hoursTitle.setTextColor(color)
-        binding.contactTitle.setTextColor(color)
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(
+            animateTextColorChange(binding.detailTitle, color),
+            animateTextColorChange(binding.photosTitle, color),
+            animateTextColorChange(binding.reviewTitle, color),
+            animateTextColorChange(binding.locationTitle, color),
+            animateTextColorChange(binding.hoursTitle, color),
+            animateTextColorChange(binding.contactTitle, color)
+        )
+        animatorSet.start()
     }
 
     private fun setNavigationButtonColor(colorIcon: Int, colorBackground: Int) {

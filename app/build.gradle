@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -70,8 +71,8 @@ dependencies {
     implementation 'com.android.support:palette-v7:31.0.0'
 
     // Location
-    implementation 'com.google.android.gms:play-services-maps:18.0.1'
-    implementation 'com.google.android.gms:play-services-location:19.0.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
 
     // Room components
     implementation "androidx.room:room-ktx:2.4.0"
