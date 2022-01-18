@@ -16,6 +16,14 @@ import com.example.avintura.domain.AvinturaHour
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.NoSuchElementException
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Shader
+
+import android.graphics.drawable.BitmapDrawable
+import com.example.avintura.ui.Category
+
 
 fun Float.getStarRatingRegularDrawable(context: Context): Drawable? {
     return when (this) {
@@ -103,12 +111,12 @@ fun ImageView.setFavoriteDrawableColored(context: Context, unwrappedDrawable: Dr
     }
 }
 
-private fun ImageView.setBorderFavorite(context: Context,) {
+private fun ImageView.setBorderFavorite(context: Context) {
     val unwrappedDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_favorite_border_24)
     this.setFavoriteDrawableColored(context, unwrappedDrawable)
 }
 
-private fun ImageView.setFilledFavorite(context: Context,) {
+private fun ImageView.setFilledFavorite(context: Context) {
     val unwrappedDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_favorite_24)
     this.setFavoriteDrawableColored(context, unwrappedDrawable)
 }
@@ -171,4 +179,40 @@ fun getDay(day: Int): String {
         6 -> "Sun"
         else -> ""
     }
+}
+
+fun ImageView.setCategoryTileBackground(context: Context, category: Category) {
+    when (category) {
+        Category.Winery -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.ic_wine_svgrepo_com_tile))
+        Category.Dining -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.food_svgrepo_com_tile))
+        Category.HotelSpa -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.ic_hotel_svgrepo_com_tile))
+        Category.Activity -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.ic_hot_air_balloon_svgrepo_com_tile))
+        Category.Favorite -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.ic_baseline_favorite_24_tile))
+    }
+}
+
+private fun ImageView.setTileBackgroundDrawable(context: Context, d: Drawable?) {
+    if (d != null) {
+        val bitmap = d.drawableToBitmap()
+        if (bitmap != null) {
+            val matrix = Matrix().apply {
+                postRotate(15F)
+            }
+            val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            val bitmapDrawable = BitmapDrawable(context.resources, rotated)
+            bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+            background = bitmapDrawable
+        }
+    }
+}
+
+private fun Drawable.drawableToBitmap(): Bitmap? {
+    if (this is BitmapDrawable) {
+        return this.bitmap
+    }
+    val bitmap = Bitmap.createBitmap(this.intrinsicWidth, this.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    this.setBounds(0, 0, canvas.width, canvas.height)
+    this.draw(canvas)
+    return bitmap
 }

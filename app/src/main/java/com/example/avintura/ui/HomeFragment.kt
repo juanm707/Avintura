@@ -47,6 +47,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         setBusinessesObserver()
         setConnectionStatusObserver()
         setFavoriteCountObserver()
+        setCategoryCardClick()
     }
 
     override fun onDestroyView() {
@@ -92,6 +93,24 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
             if (it)
                 Toast.makeText(requireContext(), "BAD CONNECTION", Toast.LENGTH_SHORT).show()
         })
+    }
+
+    private fun setCategoryCardClick() {
+        binding.wineryCard.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Winery))
+        }
+        binding.diningCard.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Dining))
+        }
+        binding.hotelCard.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.HotelSpa))
+        }
+        binding.thingsCard.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Activity))
+        }
+        binding.favoriteCard.setOnClickListener {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Favorite))
+        }
     }
 
     override fun onBusinessClick(position: Int) {

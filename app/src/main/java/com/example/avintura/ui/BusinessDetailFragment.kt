@@ -62,9 +62,6 @@ class BusinessDetailFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private lateinit var favoriteIcon: Drawable
-    private lateinit var unFavoriteIcon: Drawable
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

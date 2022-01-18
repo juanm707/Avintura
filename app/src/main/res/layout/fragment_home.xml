@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/middle_blue_green"
+    tools:theme="@style/Theme.Avintura"
     tools:context=".ui.HomeFragment">
 
     <androidx.appcompat.widget.Toolbar
