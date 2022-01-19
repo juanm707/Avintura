@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentCategoryBinding
@@ -44,39 +47,50 @@ class CategoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpNavigation()
         setColorByCategory(categoryViewModel.category)
-        binding.backArrow.setOnClickListener {
-            findNavController().navigateUp()
-        }
+    }
+
+    private fun setUpNavigation() {
+        val navController = findNavController()
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        binding.categoryToolbar.setupWithNavController(navController, appBarConfiguration)
     }
 
     private fun setColorByCategory(category: Category) {
-        binding.repeatBackground.setCategoryTileBackground(requireContext(), category)
+        binding.nestedScrollView.setCategoryTileBackground(requireContext(), category)
+        // back arrow icon color
+        val arrowIcon = (binding.categoryToolbar.navigationIcon as DrawerArrowDrawable)
+        val color: Int
         when (category) {
             Category.Winery -> {
-                binding.mainBackground.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pastel_pink))
-                binding.categoryTopTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.ruby_red))
-                DrawableCompat.setTint(
-                    DrawableCompat.wrap(binding.backArrow.drawable),
-                    ContextCompat.getColor(requireContext(), R.color.ruby_red)
-                )
+                binding.coordinatorLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pastel_pink))
+                binding.categoryToolbar.title = "Wineries"
+                color = ContextCompat.getColor(requireContext(), R.color.ruby_red)
             }
             Category.Dining -> {
-                binding.mainBackground.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gamboge))
-                binding.categoryTopTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.mahogany))
+                binding.coordinatorLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gamboge))
+                binding.categoryToolbar.title = "Dining"
+                color = ContextCompat.getColor(requireContext(), R.color.mahogany)
             }
             Category.HotelSpa -> {
-                binding.mainBackground.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mauve))
-                binding.categoryTopTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.persian_indigo))
+                binding.coordinatorLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mauve))
+                binding.categoryToolbar.title = "Hotel & Spa"
+                color = ContextCompat.getColor(requireContext(), R.color.persian_indigo)
             }
             Category.Activity -> {
-                binding.mainBackground.setBackgroundColor(Color.parseColor("#89C2D9"))
-                binding.categoryTopTitle.setTextColor(Color.parseColor("#013A63"))
+                binding.coordinatorLayout.setBackgroundColor(Color.parseColor("#89C2D9"))
+                binding.categoryToolbar.title = "Things To Do"
+                color = Color.parseColor("#013A63")
             }
             Category.Favorite -> {
-                binding.mainBackground.setBackgroundColor(Color.parseColor("#FFCCD5"))
-                binding.categoryTopTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.bright_maroon))
+                binding.coordinatorLayout.setBackgroundColor(Color.parseColor("#FFCCD5"))
+                binding.categoryToolbar.title = "Favorites"
+                color = ContextCompat.getColor(requireContext(), R.color.bright_maroon)
             }
         }
+        arrowIcon.color = color
+        binding.categoryToolbar.setTitleTextColor(color)
+        requireActivity().window.statusBarColor = color
     }
 }

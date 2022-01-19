@@ -22,6 +22,7 @@ import android.graphics.Matrix
 import android.graphics.Shader
 
 import android.graphics.drawable.BitmapDrawable
+import androidx.core.widget.NestedScrollView
 import com.example.avintura.ui.Category
 
 
@@ -181,7 +182,7 @@ fun getDay(day: Int): String {
     }
 }
 
-fun ImageView.setCategoryTileBackground(context: Context, category: Category) {
+fun NestedScrollView.setCategoryTileBackground(context: Context, category: Category) {
     when (category) {
         Category.Winery -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.ic_wine_svgrepo_com_tile))
         Category.Dining -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.food_svgrepo_com_tile))
@@ -191,7 +192,7 @@ fun ImageView.setCategoryTileBackground(context: Context, category: Category) {
     }
 }
 
-private fun ImageView.setTileBackgroundDrawable(context: Context, d: Drawable?) {
+private fun NestedScrollView.setTileBackgroundDrawable(context: Context, d: Drawable?) {
     if (d != null) {
         val bitmap = d.drawableToBitmap()
         if (bitmap != null) {
