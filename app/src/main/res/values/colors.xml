@@ -19,7 +19,9 @@
     <color name="pink">#FFCCD5</color>
     <color name="teal_claimed">#26a69a</color>
     <color name="blue_primary">#01579b</color>
-
+    <color name="orange_yellow_crayola">#ffd485</color>
+    <color name="mauve_unselected">#F0D5FF</color>
+    <color name="celeste">#C5FAFB</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

@@ -1,5 +1,6 @@
 package com.example.avintura.ui
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -19,6 +19,7 @@ import com.example.avintura.databinding.FragmentCategoryBinding
 import com.example.avintura.util.setCategoryTileBackground
 import com.example.avintura.viewmodels.CategoryViewModel
 import com.example.avintura.viewmodels.CategoryViewModelFactory
+
 
 enum class Category {
     Winery, Dining, HotelSpa, Activity, Favorite
@@ -60,37 +61,72 @@ class CategoryFragment : Fragment() {
     private fun setColorByCategory(category: Category) {
         binding.nestedScrollView.setCategoryTileBackground(requireContext(), category)
         // back arrow icon color
-        val arrowIcon = (binding.categoryToolbar.navigationIcon as DrawerArrowDrawable)
-        val color: Int
         when (category) {
             Category.Winery -> {
                 binding.coordinatorLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pastel_pink))
                 binding.categoryToolbar.title = "Wineries"
-                color = ContextCompat.getColor(requireContext(), R.color.ruby_red)
+                setToolbarItemsColor(ContextCompat.getColor(requireContext(), R.color.ruby_red))
+                setTabLayoutColor(ContextCompat.getColor(requireContext(), R.color.ruby_red), ContextCompat.getColor(requireContext(), R.color.pink))
             }
             Category.Dining -> {
                 binding.coordinatorLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gamboge))
                 binding.categoryToolbar.title = "Dining"
-                color = ContextCompat.getColor(requireContext(), R.color.mahogany)
+                setToolbarItemsColor(ContextCompat.getColor(requireContext(), R.color.mahogany))
+                setTabLayoutColor(ContextCompat.getColor(requireContext(), R.color.mahogany), ContextCompat.getColor(requireContext(), R.color.orange_yellow_crayola))
             }
             Category.HotelSpa -> {
                 binding.coordinatorLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.mauve))
                 binding.categoryToolbar.title = "Hotel & Spa"
-                color = ContextCompat.getColor(requireContext(), R.color.persian_indigo)
+                setToolbarItemsColor(ContextCompat.getColor(requireContext(), R.color.persian_indigo))
+                setTabLayoutColor(ContextCompat.getColor(requireContext(), R.color.persian_indigo), ContextCompat.getColor(requireContext(), R.color.mauve_unselected))
             }
             Category.Activity -> {
                 binding.coordinatorLayout.setBackgroundColor(Color.parseColor("#89C2D9"))
                 binding.categoryToolbar.title = "Things To Do"
-                color = Color.parseColor("#013A63")
+                setToolbarItemsColor(Color.parseColor("#013A63"))
+                setTabLayoutColor(Color.parseColor("#013A63"), ContextCompat.getColor(requireContext(), R.color.celeste))
             }
             Category.Favorite -> {
                 binding.coordinatorLayout.setBackgroundColor(Color.parseColor("#FFCCD5"))
                 binding.categoryToolbar.title = "Favorites"
-                color = ContextCompat.getColor(requireContext(), R.color.bright_maroon)
+                setToolbarItemsColor(ContextCompat.getColor(requireContext(), R.color.bright_maroon))
+                setTabLayoutColor(ContextCompat.getColor(requireContext(), R.color.bright_maroon), ContextCompat.getColor(requireContext(),
+                    R.color.pastel_pink
+                ))
             }
         }
+    }
+
+    private fun setToolbarItemsColor(color: Int) {
+        val arrowIcon = (binding.categoryToolbar.navigationIcon as DrawerArrowDrawable)
         arrowIcon.color = color
         binding.categoryToolbar.setTitleTextColor(color)
         requireActivity().window.statusBarColor = color
+    }
+
+    private fun setTabLayoutColor(selected: Int, unselected: Int) {
+        val colorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_selected),
+                intArrayOf()
+            ),
+            intArrayOf(
+                selected,
+                unselected
+            )
+        )
+        binding.categoryTablayout.tabIconTint = colorStateList
+        binding.categoryTablayout.setSelectedTabIndicatorColor(selected)
+        val colorStateListRipple = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_selected),
+                intArrayOf()
+            ),
+            intArrayOf(
+                unselected,
+                selected
+            )
+        )
+        binding.categoryTablayout.tabRippleColor = colorStateListRipple
     }
 }
