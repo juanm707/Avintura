@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentHomeBinding
@@ -75,6 +76,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
 
     private fun setBusinessesObserver() {
         binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this)
+        binding.homeViewPager.registerOnPageChangeCallback(getOnPageChangeCallbackObject())
         homeViewModel.businesses.observe(viewLifecycleOwner, { businesses ->
             binding.progressCircular.visibility = View.GONE
             (binding.homeViewPager.adapter as ViewPagerTopRecyclerViewAdapter).submitList(businesses)
@@ -113,9 +115,16 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         }
     }
 
+    private fun getOnPageChangeCallbackObject(): ViewPager2.OnPageChangeCallback {
+        return object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                homeViewModel.position = position
+            }
+        }
+    }
+
     override fun onBusinessClick(position: Int) {
         if (homeViewModel.businesses.value != null) {
-            homeViewModel.position = position
             val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment(homeViewModel.businesses.value!![position].id, homeViewModel.businesses.value!![position].name)
             findNavController().navigate(action)
         }

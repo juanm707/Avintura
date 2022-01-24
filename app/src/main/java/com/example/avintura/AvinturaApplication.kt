@@ -20,6 +20,7 @@ class AvinturaApplication : Application() {
         database.photoDao(),
         database.reviewDao(),
         database.hourDao(),
-        database.openDao()
+        database.openDao(),
+        database.categoryTypeDao()
     )}
 }

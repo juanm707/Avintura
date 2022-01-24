@@ -19,7 +19,7 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
     private val _businesses = MutableLiveData<List<AvinturaBusiness>>()
     val businesses: LiveData<List<AvinturaBusiness>> = _businesses
 
-    val favoriteCount = repository.getFavoriteCount()
+    val favoriteCount = repository.getFavoriteCount().asLiveData()
 
     var position: Int = 0
 

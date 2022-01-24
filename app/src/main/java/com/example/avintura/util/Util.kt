@@ -23,6 +23,7 @@ import android.graphics.Shader
 
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView
 import com.example.avintura.ui.Category
 
 
@@ -182,7 +183,7 @@ fun getDay(day: Int): String {
     }
 }
 
-fun NestedScrollView.setCategoryTileBackground(context: Context, category: Category) {
+fun RecyclerView.setCategoryTileBackground(context: Context, category: Category) {
     when (category) {
         Category.Winery -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.ic_wine_svgrepo_com_tile))
         Category.Dining -> setTileBackgroundDrawable(context, ContextCompat.getDrawable(context, R.drawable.food_svgrepo_com_tile))
@@ -192,7 +193,7 @@ fun NestedScrollView.setCategoryTileBackground(context: Context, category: Categ
     }
 }
 
-private fun NestedScrollView.setTileBackgroundDrawable(context: Context, d: Drawable?) {
+private fun RecyclerView.setTileBackgroundDrawable(context: Context, d: Drawable?) {
     if (d != null) {
         val bitmap = d.drawableToBitmap()
         if (bitmap != null) {
@@ -216,4 +217,15 @@ private fun Drawable.drawableToBitmap(): Bitmap? {
     this.setBounds(0, 0, canvas.width, canvas.height)
     this.draw(canvas)
     return bitmap
+}
+
+// https://www.yelp.com/search?find_desc=Activities&find_loc=CA%2C+CA+94574&cflt=tours%2Cwinetours%2Ctransport%2Climos%2Cparks%2Cwinetastingroom%2Cgyms%2Cgalleries%2Cyoga%2Ctheater%2Cmartialarts%2Cbikerentals%2Cpartybusrentals%2Cmuseums%2Clandmarks%2Cplaygrounds%2Chiking%2Ckids_activities%2Cdancestudio%2Cgolf%2Cmeditationcenters%2Cfarms%2Cfestivals%2Cfarmersmarket%2Cmovietheaters%2Crafting%2Cswimmingpools%2Cboating%2Cfoodtours%2Csocial_clubs%2Cbikes%2Cbustours%2Chot_air_balloons%2Cartclasses%2Cwalkingtours%2Cpaddleboarding%2Cdjs%2Cactive%2Carts%2Cdog_parks%2Crecreation%2Chorsebackriding%2Chorse_boarding
+fun Category.getString(): String {
+    return when (this) {
+        Category.Winery -> "Winery"
+        Category.Dining -> "Restaurant"
+        Category.Activity -> "Things To Do"
+        Category.HotelSpa -> "Hotel and Spa"
+        Category.Favorite -> "Favorite"
+    }
 }

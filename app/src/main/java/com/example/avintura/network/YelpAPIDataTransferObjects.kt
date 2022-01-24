@@ -15,7 +15,9 @@ data class YelpBusiness(
     val rating: Float,
     @Json(name = "image_url") val imageUrl: String,
     @Json(name = "review_count") val reviewCount: Int,
-    val location: Location
+    val location: Location, // for category
+    val distance: Float, // for category
+    val price: String = "", // for category
 )
 
 data class YelpBusinessDetail(
@@ -112,13 +114,26 @@ fun YelpBusinessContainer.asDatabaseModel(): List<Business> {
             it.rating,
             it.imageUrl,
             it.reviewCount,
-            it.location.city
+            it.location.city,
+            it.price,
+            it.distance
+        )
+    }
+}
+
+fun YelpBusinessContainer.asCategoryTypeModel(categoryType: Int, offset: Int): List<CategoryType> {
+    val start = offset + 1
+    return businesses.mapIndexed { index, yelpBusiness ->
+        CategoryType(
+            yelpBusiness.id,
+            categoryType,
+            index + start
         )
     }
 }
 
 fun YelpBusinessDetail.asDetailDatabaseModel(): BusinessDetail {
-    val dbLocation = com.example.avintura.database.Location(
+    val dbLocation = Location(
         location.address1,
         location.address2,
         location.address3,

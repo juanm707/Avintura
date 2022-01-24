@@ -29,7 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:fontFamily="@font/pacifico"
-        android:text="Top Ten"
+        android:text="Featured "
+        android:paddingEnd="8dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
         android:textColor="@color/rich_black_FOGRA_29"
         app:layout_constraintStart_toStartOf="parent"
@@ -62,8 +63,8 @@
         android:adjustViewBounds="true"
         android:rotation="25"
         android:src="@drawable/crown_svgrepo_com"
-        android:translationX="-11dp"
-        android:translationY="20dp"
+        android:translationX="-25dp"
+        android:translationY="10dp"
         app:layout_constraintStart_toEndOf="@+id/home_top_title"
         app:layout_constraintTop_toTopOf="@+id/home_top_title" />
 

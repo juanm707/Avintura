@@ -1,16 +1,13 @@
 package com.example.avintura.repository
 
-import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
 import com.example.avintura.database.*
 import com.example.avintura.database.dao.*
 import com.example.avintura.domain.*
 import com.example.avintura.network.*
 import com.example.avintura.network.YelpAPINetwork.retrofitYelpService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.avintura.ui.Category
+import kotlinx.coroutines.flow.Flow
 
 class AvinturaRepository(
     private val businessDao: BusinessDao,
@@ -19,7 +16,8 @@ class AvinturaRepository(
     private val photoDao: PhotoDao,
     private val reviewDao: ReviewDao,
     private val hourDao: HourDao,
-    private val openDao: OpenDao
+    private val openDao: OpenDao,
+    private val categoryTypeDao: CategoryTypeDao
 ) {
 
     // TODO: FIX THIS vvv https://developer.android.com/topic/libraries/architecture/livedata#livedata-in-architecture
@@ -39,11 +37,35 @@ class AvinturaRepository(
         val businessesFromNetwork = retrofitYelpService.searchBusinesses(
             searchTerm = null,
             location = "Napa County, CA",
-            offset = offsetFromViewModel
+            offset = offsetFromViewModel,
+            radius = null
         )
         if (businessesFromNetwork.businesses.isNotEmpty())
             businessDao.deleteAll()
         businessDao.insertAll(businessesFromNetwork.asDatabaseModel())
+    }
+
+    @WorkerThread
+    suspend fun refreshBusinessesByCategory(
+        searchTerm: String,
+        location: String,
+        offset: Int,
+        limit: Int,
+        radius: Int,
+        deleteCategoryType: Boolean,
+        categoryType: Category
+    ) {
+        val businessesFromNetwork = retrofitYelpService.searchBusinesses(
+            searchTerm = searchTerm,
+            location = location,
+            offset = offset,
+            limit = limit,
+            radius = radius
+        )
+        if (businessesFromNetwork.businesses.isNotEmpty() && deleteCategoryType)
+            categoryTypeDao.delete(categoryType.ordinal)
+        businessDao.insertAll(businessesFromNetwork.asDatabaseModel())
+        categoryTypeDao.insertAll(businessesFromNetwork.asCategoryTypeModel(categoryType.ordinal, offset))
     }
 
     @WorkerThread
@@ -80,6 +102,11 @@ class AvinturaRepository(
     }
 
     @WorkerThread
+    suspend fun getBusinessesByCategory(categoryType: Category): List<AvinturaCategoryBusiness> {
+        return categoryTypeDao.getBusinesses(categoryType.ordinal).asCategoryDomainModel()
+    }
+
+    @WorkerThread
     suspend fun getBusiness(businessId: String): AvinturaBusinessDetail {
         return businessDetailDao.getBusiness(businessId).asDomainModel()
     }
@@ -100,7 +127,7 @@ class AvinturaRepository(
     }
 
     @WorkerThread
-    fun getFavoriteCount(): LiveData<Int> {
+    fun getFavoriteCount(): Flow<Int> {
         return favoriteDao.getFavoriteCount()
     }
 

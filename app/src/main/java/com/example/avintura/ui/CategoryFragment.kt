@@ -13,16 +13,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentCategoryBinding
+import com.example.avintura.ui.adapter.CategoryResultListRecyclerViewAdapter
 import com.example.avintura.util.setCategoryTileBackground
 import com.example.avintura.viewmodels.CategoryViewModel
 import com.example.avintura.viewmodels.CategoryViewModelFactory
+import jp.wasabeef.recyclerview.adapters.*
 
 
 enum class Category {
-    Winery, Dining, HotelSpa, Activity, Favorite
+    Winery, Dining, HotelSpa, Activity, Favorite // 0, 1, 2, 3, 4
 }
 class CategoryFragment : Fragment() {
     private lateinit var categoryViewModel: CategoryViewModel
@@ -50,6 +53,14 @@ class CategoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
         setColorByCategory(categoryViewModel.category)
+        categoryViewModel.businesses.observe(viewLifecycleOwner, {
+            binding.categoryRecyclerView.apply {
+                binding.progressCircular.visibility = View.GONE
+                layoutManager = LinearLayoutManager(requireContext())
+                setHasFixedSize(true)
+                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext()))
+            }
+        })
     }
 
     private fun setUpNavigation() {
@@ -59,7 +70,7 @@ class CategoryFragment : Fragment() {
     }
 
     private fun setColorByCategory(category: Category) {
-        binding.nestedScrollView.setCategoryTileBackground(requireContext(), category)
+        binding.categoryRecyclerView.setCategoryTileBackground(requireContext(), category)
         // back arrow icon color
         when (category) {
             Category.Winery -> {
@@ -102,6 +113,7 @@ class CategoryFragment : Fragment() {
         arrowIcon.color = color
         binding.categoryToolbar.setTitleTextColor(color)
         requireActivity().window.statusBarColor = color
+        binding.progressCircular.setIndicatorColor(color)
     }
 
     private fun setTabLayoutColor(selected: Int, unselected: Int) {

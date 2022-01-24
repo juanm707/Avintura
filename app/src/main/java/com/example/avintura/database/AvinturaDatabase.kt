@@ -7,7 +7,15 @@ import androidx.room.RoomDatabase
 import com.example.avintura.database.dao.*
 import kotlinx.coroutines.CoroutineScope
 
-@Database(entities = [Business::class, Favorite::class, BusinessDetail::class, Photo::class, Review::class, Hour::class, Open::class], version = 1, exportSchema = false)
+@Database(entities = [
+    Business::class,
+    Favorite::class,
+    BusinessDetail::class,
+    Photo::class,
+    Review::class,
+    Hour::class,
+    Open::class,
+    CategoryType::class], version = 1, exportSchema = false)
 abstract class AvinturaDatabase : RoomDatabase() {
 
     abstract fun businessDao(): BusinessDao
@@ -17,6 +25,7 @@ abstract class AvinturaDatabase : RoomDatabase() {
     abstract fun reviewDao(): ReviewDao
     abstract fun hourDao(): HourDao
     abstract fun openDao(): OpenDao
+    abstract fun categoryTypeDao(): CategoryTypeDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the
