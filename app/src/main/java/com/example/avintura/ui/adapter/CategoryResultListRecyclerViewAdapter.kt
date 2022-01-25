@@ -13,12 +13,14 @@ import com.example.avintura.domain.AvinturaCategoryBusiness
 import com.example.avintura.util.getStarRatingRegularDrawable
 
 
-// TODO list adapter with diffutil
-class CategoryResultListRecyclerViewAdapter(private val businesses: List<AvinturaCategoryBusiness>, private val context: Context) : RecyclerView.Adapter<CategoryResultListRecyclerViewAdapter.CategoryItemHolder>() {
+// TODO list adapter with diffutil or pagination
+class CategoryResultListRecyclerViewAdapter(private val businesses: List<AvinturaCategoryBusiness>,
+                                            private val context: Context,
+                                            private val onBusinessClickListener: ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener) : RecyclerView.Adapter<CategoryResultListRecyclerViewAdapter.CategoryItemHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryItemHolder {
         val layout = LayoutInflater.from(parent.context).inflate(R.layout.category_list_item, parent, false)
-        return CategoryItemHolder(layout)
+        return CategoryItemHolder(layout, onBusinessClickListener)
     }
 
     override fun onBindViewHolder(holder: CategoryItemHolder, position: Int) {
@@ -48,13 +50,21 @@ class CategoryResultListRecyclerViewAdapter(private val businesses: List<Avintur
         return businesses.size
     }
 
-    class CategoryItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class CategoryItemHolder(itemView: View, private val onBusinessClickListener: ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val name: TextView = itemView.findViewById(R.id.business_name)
         val picture: ImageView = itemView.findViewById(R.id.business_image)
         val starRating: ImageView = itemView.findViewById(R.id.business_rating)
         val reviewCount: TextView = itemView.findViewById(R.id.review_count)
         val city: TextView = itemView.findViewById(R.id.business_city)
         val priceAndMiles: TextView = itemView.findViewById(R.id.price_and_miles)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            onBusinessClickListener.onBusinessClick(adapterPosition)
+        }
     }
 
     private fun metersToMiles(distance: Float): String {

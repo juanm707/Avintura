@@ -219,7 +219,6 @@ private fun Drawable.drawableToBitmap(): Bitmap? {
     return bitmap
 }
 
-// https://www.yelp.com/search?find_desc=Activities&find_loc=CA%2C+CA+94574&cflt=tours%2Cwinetours%2Ctransport%2Climos%2Cparks%2Cwinetastingroom%2Cgyms%2Cgalleries%2Cyoga%2Ctheater%2Cmartialarts%2Cbikerentals%2Cpartybusrentals%2Cmuseums%2Clandmarks%2Cplaygrounds%2Chiking%2Ckids_activities%2Cdancestudio%2Cgolf%2Cmeditationcenters%2Cfarms%2Cfestivals%2Cfarmersmarket%2Cmovietheaters%2Crafting%2Cswimmingpools%2Cboating%2Cfoodtours%2Csocial_clubs%2Cbikes%2Cbustours%2Chot_air_balloons%2Cartclasses%2Cwalkingtours%2Cpaddleboarding%2Cdjs%2Cactive%2Carts%2Cdog_parks%2Crecreation%2Chorsebackriding%2Chorse_boarding
 fun Category.getString(): String {
     return when (this) {
         Category.Winery -> "Winery"
@@ -228,4 +227,8 @@ fun Category.getString(): String {
         Category.HotelSpa -> "Hotel and Spa"
         Category.Favorite -> "Favorite"
     }
+}
+
+fun getHotelAndSpaCategories(): String {
+    return "tours,transport,limos,parks,gyms,galleries,yoga,theater,martialarts,bikerentals,partybusrentals,museums,landmarks,playgrounds,hiking,kids_activities,dancestudio,golf,meditationcenters,farms,festivals,farmersmarket,movietheaters,rafting,swimmingpools,boating,foodtours,social_clubs,bikes,bustours,hot_air_balloons,artclasses,walkingtours,paddleboarding,djs,active,arts,dog_parks,recreation,horsebackriding,horse_boarding"
 }

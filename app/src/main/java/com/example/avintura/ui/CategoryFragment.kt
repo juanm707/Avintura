@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentCategoryBinding
 import com.example.avintura.ui.adapter.CategoryResultListRecyclerViewAdapter
+import com.example.avintura.ui.adapter.ViewPagerTopRecyclerViewAdapter
 import com.example.avintura.util.setCategoryTileBackground
 import com.example.avintura.viewmodels.CategoryViewModel
 import com.example.avintura.viewmodels.CategoryViewModelFactory
@@ -27,7 +29,7 @@ import jp.wasabeef.recyclerview.adapters.*
 enum class Category {
     Winery, Dining, HotelSpa, Activity, Favorite // 0, 1, 2, 3, 4
 }
-class CategoryFragment : Fragment() {
+class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener {
     private lateinit var categoryViewModel: CategoryViewModel
     private lateinit var categoryViewModelFactory: CategoryViewModelFactory
 
@@ -53,20 +55,26 @@ class CategoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
         setColorByCategory(categoryViewModel.category)
-        categoryViewModel.businesses.observe(viewLifecycleOwner, {
-            binding.categoryRecyclerView.apply {
-                binding.progressCircular.visibility = View.GONE
-                layoutManager = LinearLayoutManager(requireContext())
-                setHasFixedSize(true)
-                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext()))
-            }
-        })
+        setUpBusinessesObserver()
     }
 
     private fun setUpNavigation() {
         val navController = findNavController()
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         binding.categoryToolbar.setupWithNavController(navController, appBarConfiguration)
+    }
+
+    private fun setUpBusinessesObserver() {
+        binding.categoryRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+        }
+        categoryViewModel.businesses.observe(viewLifecycleOwner, {
+            binding.categoryRecyclerView.apply {
+                binding.progressCircular.visibility = View.GONE
+                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext(), this@CategoryFragment))
+            }
+        })
     }
 
     private fun setColorByCategory(category: Category) {
@@ -140,5 +148,18 @@ class CategoryFragment : Fragment() {
             )
         )
         binding.categoryTablayout.tabRippleColor = colorStateListRipple
+    }
+
+    override fun onBusinessClick(position: Int) {
+        if (categoryViewModel.businesses.value != null) {
+            val action = CategoryFragmentDirections.actionCategoryFragmentToBusinessDetailFragment(
+                categoryViewModel.businesses.value!![position].businessBasic.id,
+                categoryViewModel.businesses.value!![position].businessBasic.name)
+            findNavController().navigate(action)
+        }
+    }
+
+    override fun onFavoriteClick(position: Int) {
+        Toast.makeText(requireContext(), "Favorited $position", Toast.LENGTH_SHORT).show()
     }
 }

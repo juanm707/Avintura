@@ -18,6 +18,7 @@ data class YelpBusiness(
     val location: Location, // for category
     val distance: Float, // for category
     val price: String = "", // for category
+    val coordinates: Coordinate, // for category map
 )
 
 data class YelpBusinessDetail(
@@ -116,7 +117,11 @@ fun YelpBusinessContainer.asDatabaseModel(): List<Business> {
             it.reviewCount,
             it.location.city,
             it.price,
-            it.distance
+            it.distance,
+            Coordinates(
+                it.coordinates.latitude,
+                it.coordinates.longitude
+            )
         )
     }
 }

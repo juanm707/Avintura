@@ -25,7 +25,8 @@ data class Business(
     val reviewCount: Int,
     val city: String,
     val price: String?,
-    val distance: Float?
+    val distance: Float?,
+    @Embedded val coordinates: Coordinates
 )
 
 @Entity
@@ -138,7 +139,6 @@ data class CategoryType(
 
 data class CategoryBusinessWithFavoriteStatus(
     @Embedded val business: Business,
-    val rank: Int,
     val favorite: Int
 )
 
@@ -230,7 +230,8 @@ fun List<CategoryBusinessWithFavoriteStatus>.asCategoryDomainModel(): List<Avint
             ),
             it.business.city,
             it.business.distance,
-            it.business.price
+            it.business.price,
+            Coordinates(it.business.coordinates.latitude, it.business.coordinates.longitude)
         )
     }
 }

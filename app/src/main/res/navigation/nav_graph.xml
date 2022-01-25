@@ -51,5 +51,12 @@
         <argument
             android:name="category"
             app:argType="com.example.avintura.ui.Category" />
+        <action
+            android:id="@+id/action_categoryFragment_to_BusinessDetailFragment"
+            app:destination="@id/BusinessDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 </navigation>

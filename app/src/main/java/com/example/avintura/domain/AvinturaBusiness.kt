@@ -59,5 +59,6 @@ data class AvinturaCategoryBusiness(
     val businessBasic: AvinturaBusiness,
     val city: String,
     val distance: Float?,
-    val price: String?
+    val price: String?,
+    val coordinates: Coordinates
 )

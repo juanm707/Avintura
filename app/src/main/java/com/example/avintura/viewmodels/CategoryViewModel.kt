@@ -27,16 +27,18 @@ class CategoryViewModel(private val repository: AvinturaRepository, val category
     private fun refreshDataFromNetwork() {
         viewModelScope.launch {
             try {
-                repository.refreshBusinessesByCategory(
-                    category.getString(),
-                    "CA, CA 94574",
-                    0,
-                    50,
-                    24000,
-                    true,
-                    category
-                )
-                _connectionStatusError.value = false
+                if (category != Category.Favorite) {
+                    repository.refreshBusinessesByCategory(
+                        category.getString(),
+                        "CA, CA 94574",
+                        0,
+                        50,
+                        24000,
+                        true,
+                        category
+                    )
+                    _connectionStatusError.value = false
+                }
                 _businesses.value = repository.getBusinessesByCategory(category)
             }
             catch (e: Exception) {

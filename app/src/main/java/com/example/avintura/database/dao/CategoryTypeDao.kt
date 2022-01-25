@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryTypeDao {
-    @Query("SELECT  ct.rank, b.*, f.favorite FROM CategoryType ct LEFT JOIN Business b ON ct.businessId = b.id LEFT JOIN Favorite f ON f.id = b.id WHERE ct.type = :category ORDER BY ct.rank")
+    @Query("SELECT b.*, f.favorite FROM CategoryType ct LEFT JOIN Business b ON ct.businessId = b.id LEFT JOIN Favorite f ON f.id = b.id WHERE ct.type = :category ORDER BY ct.rank")
     suspend fun getBusinesses(category: Int) : List<CategoryBusinessWithFavoriteStatus>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

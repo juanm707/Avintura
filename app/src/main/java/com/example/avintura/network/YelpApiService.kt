@@ -32,7 +32,8 @@ interface YelpApiService {
         @Query("offset") offset: Int,
         @Query("sort_by") sortBy: String = "best_match",
         @Query("limit") limit: Int = 10,
-        @Query("radius") radius: Int?
+        @Query("radius") radius: Int?,
+        @Query("categories") categories: String?
     ) : YelpBusinessContainer
 
     @GET("businesses/{id}")

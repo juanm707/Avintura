@@ -7,6 +7,7 @@ import com.example.avintura.domain.*
 import com.example.avintura.network.*
 import com.example.avintura.network.YelpAPINetwork.retrofitYelpService
 import com.example.avintura.ui.Category
+import com.example.avintura.util.getHotelAndSpaCategories
 import kotlinx.coroutines.flow.Flow
 
 class AvinturaRepository(
@@ -19,15 +20,8 @@ class AvinturaRepository(
     private val openDao: OpenDao,
     private val categoryTypeDao: CategoryTypeDao
 ) {
-
-    // TODO: FIX THIS vvv https://developer.android.com/topic/libraries/architecture/livedata#livedata-in-architecture
-    // https://developer.android.com/codelabs/advanced-kotlin-coroutines#7
-
     // Room executes all queries on a separate thread.
     // Observed Flow will notify the observer when the data has changed.
-//    val businesses: LiveData<List<AvinturaBusiness>> = Transformations.map(businessDao.getBusinesses()) {
-//        it.asDomainModel()
-//    }
 
     // By default Room runs suspend queries off the main thread, therefore, we don't need to
     // implement anything else to ensure we're not doing long running database work
@@ -38,7 +32,8 @@ class AvinturaRepository(
             searchTerm = null,
             location = "Napa County, CA",
             offset = offsetFromViewModel,
-            radius = null
+            radius = null,
+            categories = null
         )
         if (businessesFromNetwork.businesses.isNotEmpty())
             businessDao.deleteAll()
@@ -55,12 +50,14 @@ class AvinturaRepository(
         deleteCategoryType: Boolean,
         categoryType: Category
     ) {
+        val categoryString = if (categoryType == Category.HotelSpa) getHotelAndSpaCategories() else null
         val businessesFromNetwork = retrofitYelpService.searchBusinesses(
             searchTerm = searchTerm,
             location = location,
             offset = offset,
             limit = limit,
-            radius = radius
+            radius = radius,
+            categories = categoryString
         )
         if (businessesFromNetwork.businesses.isNotEmpty() && deleteCategoryType)
             categoryTypeDao.delete(categoryType.ordinal)
@@ -103,7 +100,10 @@ class AvinturaRepository(
 
     @WorkerThread
     suspend fun getBusinessesByCategory(categoryType: Category): List<AvinturaCategoryBusiness> {
-        return categoryTypeDao.getBusinesses(categoryType.ordinal).asCategoryDomainModel()
+        return if (categoryType == Category.Favorite)
+            favoriteDao.getFavorites().asCategoryDomainModel()
+        else
+            categoryTypeDao.getBusinesses(categoryType.ordinal).asCategoryDomainModel()
     }
 
     @WorkerThread

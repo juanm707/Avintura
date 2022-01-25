@@ -328,8 +328,8 @@ class BusinessDetailFragment : Fragment() {
                     }
 
                     // back arrow icon color
-                    val icon = (binding.detailToolbar.navigationIcon as DrawerArrowDrawable)
-                    icon.color = vibrantSwatch.titleTextColor
+                    val icon = (binding.detailToolbar.navigationIcon as DrawerArrowDrawable?)
+                    icon?.color = vibrantSwatch.titleTextColor
 
                     // overflow icon color
                     binding.detailToolbar.overflowIcon?.setTint(vibrantSwatch.titleTextColor)
