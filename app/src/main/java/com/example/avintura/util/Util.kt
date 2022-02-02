@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
@@ -16,10 +17,6 @@ import com.example.avintura.domain.AvinturaHour
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.NoSuchElementException
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.Shader
 
 import android.graphics.drawable.BitmapDrawable
 import androidx.core.widget.NestedScrollView
@@ -229,6 +226,16 @@ fun Category.getString(): String {
     }
 }
 
-fun getHotelAndSpaCategories(): String {
+fun Category.getProgressBarColor(context: Context): Int {
+    return when (this) {
+        Category.Winery -> ContextCompat.getColor(context, R.color.ruby_red)
+        Category.Dining -> ContextCompat.getColor(context, R.color.mahogany)
+        Category.Activity -> Color.parseColor("#013A63")
+        Category.HotelSpa -> ContextCompat.getColor(context, R.color.persian_indigo)
+        Category.Favorite -> ContextCompat.getColor(context, R.color.bright_maroon)
+    }
+}
+
+fun getThingsToDoCategories(): String {
     return "tours,transport,limos,parks,gyms,galleries,yoga,theater,martialarts,bikerentals,partybusrentals,museums,landmarks,playgrounds,hiking,kids_activities,dancestudio,golf,meditationcenters,farms,festivals,farmersmarket,movietheaters,rafting,swimmingpools,boating,foodtours,social_clubs,bikes,bustours,hot_air_balloons,artclasses,walkingtours,paddleboarding,djs,active,arts,dog_parks,recreation,horsebackriding,horse_boarding"
 }

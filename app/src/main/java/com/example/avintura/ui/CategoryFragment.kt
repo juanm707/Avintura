@@ -6,32 +6,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentCategoryBinding
-import com.example.avintura.ui.adapter.CategoryResultListRecyclerViewAdapter
-import com.example.avintura.ui.adapter.ViewPagerTopRecyclerViewAdapter
-import com.example.avintura.util.setCategoryTileBackground
-import com.example.avintura.viewmodels.CategoryViewModel
-import com.example.avintura.viewmodels.CategoryViewModelFactory
-import jp.wasabeef.recyclerview.adapters.*
+import com.example.avintura.ui.adapter.CategoryFragmentStateAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 
 
 enum class Category {
     Winery, Dining, HotelSpa, Activity, Favorite // 0, 1, 2, 3, 4
 }
-class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener {
-    private lateinit var categoryViewModel: CategoryViewModel
-    private lateinit var categoryViewModelFactory: CategoryViewModelFactory
+class CategoryFragment : Fragment() {
+    private lateinit var categoryFragmentStateAdapter: CategoryFragmentStateAdapter
+    private lateinit var category: Category
 
     private var _binding: FragmentCategoryBinding? = null
     // This property is only valid between onCreateView and
@@ -43,20 +35,22 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentCategoryBinding.inflate(inflater, container, false)
-        categoryViewModelFactory = CategoryViewModelFactory(
-            (requireActivity().application as AvinturaApplication).repository,
-            CategoryFragmentArgs.fromBundle(requireArguments()).category
-        )
-        categoryViewModel = ViewModelProvider(this, categoryViewModelFactory)[CategoryViewModel::class.java]
+        category = CategoryFragmentArgs.fromBundle(requireArguments()).category
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
-        setColorByCategory(categoryViewModel.category)
-        setUpBusinessesObserver()
+        setUpViewPager()
+        setColorByCategory(category)
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
     private fun setUpNavigation() {
         val navController = findNavController()
@@ -64,22 +58,28 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
         binding.categoryToolbar.setupWithNavController(navController, appBarConfiguration)
     }
 
-    private fun setUpBusinessesObserver() {
-        binding.categoryRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            setHasFixedSize(true)
-        }
-        categoryViewModel.businesses.observe(viewLifecycleOwner, {
-            binding.categoryRecyclerView.apply {
-                binding.progressCircular.visibility = View.GONE
-                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext(), this@CategoryFragment))
+    private fun setUpViewPager() {
+        binding.categoryViewPager.isUserInputEnabled = false // no scroll
+        categoryFragmentStateAdapter = CategoryFragmentStateAdapter(this, category)
+        binding.categoryViewPager.adapter = categoryFragmentStateAdapter
+
+        val tabLayout = binding.categoryTablayout
+
+        // TODO prevent slide when still loading business in list fragment
+        // tab icons from xml layout file disappear so have to set in mediator
+        TabLayoutMediator(tabLayout, binding.categoryViewPager) { tab, position ->
+            when (position) {
+                0 -> {
+                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_list_32)
+                }
+                1 -> {
+                    tab.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_map_24)
+                }
             }
-        })
+        }.attach()
     }
 
     private fun setColorByCategory(category: Category) {
-        binding.categoryRecyclerView.setCategoryTileBackground(requireContext(), category)
-        // back arrow icon color
         when (category) {
             Category.Winery -> {
                 binding.coordinatorLayout.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pastel_pink))
@@ -109,9 +109,10 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
                 binding.coordinatorLayout.setBackgroundColor(Color.parseColor("#FFCCD5"))
                 binding.categoryToolbar.title = "Favorites"
                 setToolbarItemsColor(ContextCompat.getColor(requireContext(), R.color.bright_maroon))
-                setTabLayoutColor(ContextCompat.getColor(requireContext(), R.color.bright_maroon), ContextCompat.getColor(requireContext(),
-                    R.color.pastel_pink
-                ))
+                setTabLayoutColor(
+                    ContextCompat.getColor(requireContext(), R.color.bright_maroon), ContextCompat.getColor(requireContext(),
+                        R.color.pastel_pink
+                    ))
             }
         }
     }
@@ -121,7 +122,6 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
         arrowIcon.color = color
         binding.categoryToolbar.setTitleTextColor(color)
         requireActivity().window.statusBarColor = color
-        binding.progressCircular.setIndicatorColor(color)
     }
 
     private fun setTabLayoutColor(selected: Int, unselected: Int) {
@@ -148,18 +148,5 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
             )
         )
         binding.categoryTablayout.tabRippleColor = colorStateListRipple
-    }
-
-    override fun onBusinessClick(position: Int) {
-        if (categoryViewModel.businesses.value != null) {
-            val action = CategoryFragmentDirections.actionCategoryFragmentToBusinessDetailFragment(
-                categoryViewModel.businesses.value!![position].businessBasic.id,
-                categoryViewModel.businesses.value!![position].businessBasic.name)
-            findNavController().navigate(action)
-        }
-    }
-
-    override fun onFavoriteClick(position: Int) {
-        Toast.makeText(requireContext(), "Favorited $position", Toast.LENGTH_SHORT).show()
     }
 }

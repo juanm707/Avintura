@@ -82,4 +82,8 @@ dependencies {
 
     // Recycler view animations
     implementation 'jp.wasabeef:recyclerview-animators:4.0.2'
+
+    // Utilities for Maps SDK for Android (requires Google Play Services)
+    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
+    implementation 'com.google.maps.android:maps-utils-ktx:3.3.0'
 }

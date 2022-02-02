@@ -7,7 +7,7 @@ import com.example.avintura.domain.*
 import com.example.avintura.network.*
 import com.example.avintura.network.YelpAPINetwork.retrofitYelpService
 import com.example.avintura.ui.Category
-import com.example.avintura.util.getHotelAndSpaCategories
+import com.example.avintura.util.getThingsToDoCategories
 import kotlinx.coroutines.flow.Flow
 
 class AvinturaRepository(
@@ -50,7 +50,7 @@ class AvinturaRepository(
         deleteCategoryType: Boolean,
         categoryType: Category
     ) {
-        val categoryString = if (categoryType == Category.HotelSpa) getHotelAndSpaCategories() else null
+        val categoryString = if (categoryType == Category.Activity) getThingsToDoCategories() else null
         val businessesFromNetwork = retrofitYelpService.searchBusinesses(
             searchTerm = searchTerm,
             location = location,

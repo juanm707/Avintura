@@ -12,7 +12,7 @@ import com.example.avintura.util.getString
 import com.example.avintura.util.toInt
 import kotlinx.coroutines.launch
 
-class CategoryViewModel(private val repository: AvinturaRepository, val category: Category) : ViewModel() {
+class CategoryListViewModel(private val repository: AvinturaRepository, val category: Category) : ViewModel() {
 
     private val _connectionStatusError = MutableLiveData(false)
     val connectionStatus: LiveData<Boolean> = _connectionStatusError
@@ -61,11 +61,11 @@ class CategoryViewModel(private val repository: AvinturaRepository, val category
 //    }
 }
 
-class CategoryViewModelFactory(private val repository: AvinturaRepository, val category: Category) : ViewModelProvider.Factory {
+class CategoryListViewModelFactory(private val repository: AvinturaRepository, val category: Category) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CategoryViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(CategoryListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return CategoryViewModel(repository, category) as T
+            return CategoryListViewModel(repository, category) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

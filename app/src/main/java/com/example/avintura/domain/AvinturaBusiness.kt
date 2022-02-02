@@ -2,6 +2,8 @@ package com.example.avintura.domain
 
 import com.example.avintura.database.Coordinates
 import com.example.avintura.database.Location
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.clustering.ClusterItem
 
 data class AvinturaBusiness(
     val id: String,
@@ -61,4 +63,16 @@ data class AvinturaCategoryBusiness(
     val distance: Float?,
     val price: String?,
     val coordinates: Coordinates
-)
+) : ClusterItem {
+    override fun getPosition(): LatLng {
+        return LatLng(coordinates.latitude, coordinates.longitude)
+    }
+
+    override fun getTitle(): String? {
+        return businessBasic.name
+    }
+
+    override fun getSnippet(): String? {
+        return price
+    }
+}
