@@ -21,10 +21,10 @@ class MapBusinessListViewModel(private val repository: AvinturaRepository, val c
     val businesses: LiveData<List<AvinturaCategoryBusiness>> = _businesses
 
     init {
-        refreshDataFromNetwork()
+        refreshDataFromLocalStorage()
     }
 
-    private fun refreshDataFromNetwork() {
+    private fun refreshDataFromLocalStorage() {
         viewModelScope.launch {
             try {
                 _businesses.value = repository.getBusinessesByCategory(category)

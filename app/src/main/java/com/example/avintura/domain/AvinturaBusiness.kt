@@ -73,6 +73,6 @@ data class AvinturaCategoryBusiness(
     }
 
     override fun getSnippet(): String? {
-        return price
+        return price ?: "No Price"
     }
 }

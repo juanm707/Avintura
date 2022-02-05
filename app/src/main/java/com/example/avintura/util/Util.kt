@@ -6,22 +6,21 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.example.avintura.R
 import com.example.avintura.domain.AvinturaHour
+import com.example.avintura.ui.Category
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.NoSuchElementException
-
-import android.graphics.drawable.BitmapDrawable
-import androidx.core.widget.NestedScrollView
-import androidx.recyclerview.widget.RecyclerView
-import com.example.avintura.ui.Category
 
 
 fun Float.getStarRatingRegularDrawable(context: Context): Drawable? {
@@ -238,4 +237,35 @@ fun Category.getProgressBarColor(context: Context): Int {
 
 fun getThingsToDoCategories(): String {
     return "tours,transport,limos,parks,gyms,galleries,yoga,theater,martialarts,bikerentals,partybusrentals,museums,landmarks,playgrounds,hiking,kids_activities,dancestudio,golf,meditationcenters,farms,festivals,farmersmarket,movietheaters,rafting,swimmingpools,boating,foodtours,social_clubs,bikes,bustours,hot_air_balloons,artclasses,walkingtours,paddleboarding,djs,active,arts,dog_parks,recreation,horsebackriding,horse_boarding"
+}
+
+fun setUIColorByCategory(category: Category, viewGroup: ViewGroup, toolbar: Toolbar, context: Context, mapExtension: String) {
+    var bgColor: Int = ContextCompat.getColor(context, R.color.middle_blue_green)
+    var title = "Category"
+
+    when (category) {
+        Category.Winery -> {
+            bgColor = ContextCompat.getColor(context, R.color.pastel_pink)
+            title = "Wineries"
+        }
+        Category.Dining -> {
+            bgColor = ContextCompat.getColor(context, R.color.gamboge)
+            title = "Dining"
+        }
+        Category.HotelSpa -> {
+            bgColor = ContextCompat.getColor(context, R.color.mauve)
+            title = "Hotel & Spa"
+        }
+        Category.Activity -> {
+            bgColor = Color.parseColor("#89C2D9")
+            title = "Things To Do"
+        }
+        Category.Favorite -> {
+            bgColor = Color.parseColor("#FFCCD5")
+            title = "Favorites"
+        }
+    }
+
+    viewGroup.setBackgroundColor(bgColor)
+    toolbar.title = title + mapExtension
 }

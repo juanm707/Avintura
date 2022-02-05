@@ -128,4 +128,5 @@
         <item quantity="other">%d reviews</item>
     </plurals>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="view_map">View Map</string>
 </resources>

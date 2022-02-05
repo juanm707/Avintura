@@ -1,18 +1,27 @@
 package com.example.avintura.ui
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
+import com.example.avintura.databinding.FragmentMapsBinding
 import com.example.avintura.domain.AvinturaCategoryBusiness
+import com.example.avintura.ui.adapter.BusinessClusterRenderer
 import com.example.avintura.ui.adapter.BusinessInfoWindowAdapter
-import com.example.avintura.ui.adapter.BusinessRenderer
+import com.example.avintura.util.getProgressBarColor
+import com.example.avintura.util.setUIColorByCategory
 import com.example.avintura.viewmodels.MapBusinessListViewModel
 import com.example.avintura.viewmodels.MapBusinessListViewModelFactory
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,10 +38,15 @@ import com.google.maps.android.clustering.ClusterManager
 class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaCategoryBusiness>, ClusterManager.OnClusterItemInfoWindowClickListener<AvinturaCategoryBusiness> {
     private lateinit var mapBusinessListViewModel: MapBusinessListViewModel
     private lateinit var mapBusinessListViewModelFactory: MapBusinessListViewModelFactory
-    private var category: Category? = null
+
     private lateinit var map: GoogleMap
 
     private lateinit var clusterManager: ClusterManager<AvinturaCategoryBusiness>
+
+    private var _binding: FragmentMapsBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     @SuppressLint("PotentialBehaviorOverride")
     private val callback = OnMapReadyCallback { googleMap ->
@@ -48,7 +62,7 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         setMapSettings(googleMap)
         setUpClusterManager(googleMap)
 
-        googleMap.setInfoWindowAdapter(clusterManager.markerManager) // dont need this...
+        googleMap.setInfoWindowAdapter(clusterManager.markerManager) // don't need this...
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
@@ -57,40 +71,32 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         observeBusinesses(googleMap)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            category = (it.getSerializable(CATEGORY_PARAM) as Category)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentMapsBinding.inflate(inflater, container, false)
         mapBusinessListViewModelFactory = MapBusinessListViewModelFactory(
             (requireActivity().application as AvinturaApplication).repository,
-            category!!
+            MapsFragmentArgs.fromBundle(requireArguments()).category
         )
         mapBusinessListViewModel = ViewModelProvider(this, mapBusinessListViewModelFactory)[MapBusinessListViewModel::class.java]
-        return inflater.inflate(R.layout.fragment_maps, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpNavigation()
+        setUIColorByCategory(mapBusinessListViewModel.category, binding.mapToolbar, binding.mapToolbar, requireContext(), " Map")
+        setToolbarItemsColor(mapBusinessListViewModel.category.getProgressBarColor(requireContext()))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(category: Category) =
-            MapsFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(CATEGORY_PARAM, category)
-                }
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onClusterClick(cluster: Cluster<AvinturaCategoryBusiness>?): Boolean {
@@ -104,6 +110,12 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         if (item != null) {
             Toast.makeText(requireContext(), "Clicked info window: " + item.businessBasic.name, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun setUpNavigation() {
+        val navController = findNavController()
+        val appBarConfiguration = AppBarConfiguration(navController.graph)
+        binding.mapToolbar.setupWithNavController(navController, appBarConfiguration)
     }
 
     private fun setMapSettings(googleMap: GoogleMap) {
@@ -123,7 +135,7 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         clusterManager = ClusterManager(requireContext(), googleMap)
         clusterManager.setOnClusterClickListener(this)
         clusterManager.setOnClusterItemInfoWindowClickListener(this)
-        clusterManager.renderer = BusinessRenderer(requireContext(), googleMap, clusterManager) // renders the cluster and individual marker icon
+        clusterManager.renderer = BusinessClusterRenderer(requireContext(), googleMap, clusterManager, mapBusinessListViewModel.category) // renders the cluster and individual marker icon
         clusterManager.markerCollection.setInfoWindowAdapter(BusinessInfoWindowAdapter(requireContext())) // the new info window
     }
 
@@ -158,5 +170,11 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
             e.printStackTrace()
             false
         }
+    }
+
+    private fun setToolbarItemsColor(color: Int) {
+        val arrowIcon = (binding.mapToolbar.navigationIcon as DrawerArrowDrawable)
+        arrowIcon.color = color
+        binding.mapToolbar.setTitleTextColor(color)
     }
 }
