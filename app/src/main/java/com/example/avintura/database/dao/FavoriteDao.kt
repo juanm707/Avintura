@@ -1,9 +1,6 @@
 package com.example.avintura.database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.avintura.database.CategoryBusinessWithFavoriteStatus
 import com.example.avintura.database.Favorite
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +18,7 @@ interface FavoriteDao {
     suspend fun insertAll(favorite: Favorite)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(favorite: Favorite)
+    suspend fun insert(favorite: Favorite) : Long
 
     @Query("DELETE FROM Favorite")
     suspend fun deleteAll()

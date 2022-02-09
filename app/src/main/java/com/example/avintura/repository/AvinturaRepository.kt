@@ -26,21 +26,19 @@ class AvinturaRepository(
     // By default Room runs suspend queries off the main thread, therefore, we don't need to
     // implement anything else to ensure we're not doing long running database work
     // off the main thread.
-    @WorkerThread
     suspend fun refreshBusinesses(offsetFromViewModel: Int) {
         val businessesFromNetwork = retrofitYelpService.searchBusinesses(
             searchTerm = null,
-            location = "Napa County, CA",
+            location = "CA, CA 94574",
             offset = offsetFromViewModel,
             radius = null,
             categories = null
         )
         if (businessesFromNetwork.businesses.isNotEmpty())
-            businessDao.deleteAll()
-        businessDao.insertAll(businessesFromNetwork.asDatabaseModel())
+            businessDao.deleteFeatured()
+        businessDao.insertAll(businessesFromNetwork.asDatabaseModel(1))
     }
 
-    @WorkerThread
     suspend fun refreshBusinessesByCategory(
         searchTerm: String,
         location: String,
@@ -61,11 +59,10 @@ class AvinturaRepository(
         )
         if (businessesFromNetwork.businesses.isNotEmpty() && deleteCategoryType)
             categoryTypeDao.delete(categoryType.ordinal)
-        businessDao.insertAll(businessesFromNetwork.asDatabaseModel())
+        businessDao.insertAll(businessesFromNetwork.asDatabaseModel(0))
         categoryTypeDao.insertAll(businessesFromNetwork.asCategoryTypeModel(categoryType.ordinal, offset))
     }
 
-    @WorkerThread
     suspend fun refreshBusinessDetail(businessId: String) {
         val businessFromNetwork = retrofitYelpService.getBusiness(
             id = businessId
@@ -87,18 +84,15 @@ class AvinturaRepository(
         }
     }
 
-    @WorkerThread
     suspend fun refreshReviews(businessId: String) {
         val reviewsFromNetwork = retrofitYelpService.getReviews(id = businessId)
         reviewDao.insertAll(reviewsFromNetwork.asReviewDatabaseModel(businessId))
     }
 
-    @WorkerThread
     suspend fun getBusinesses(): List<AvinturaBusiness> {
         return businessDao.getBusinesses().asDomainModel()
     }
 
-    @WorkerThread
     suspend fun getBusinessesByCategory(categoryType: Category): List<AvinturaCategoryBusiness> {
         return if (categoryType == Category.Favorite)
             favoriteDao.getFavorites().asCategoryDomainModel()
@@ -106,33 +100,27 @@ class AvinturaRepository(
             categoryTypeDao.getBusinesses(categoryType.ordinal).asCategoryDomainModel()
     }
 
-    @WorkerThread
     suspend fun getBusiness(businessId: String): AvinturaBusinessDetail {
         return businessDetailDao.getBusiness(businessId).asDomainModel()
     }
 
-    @WorkerThread
     suspend fun getPhotos(businessId: String): List<AvinturaPhoto> {
         return photoDao.getPhotos(businessId).asPhotoDomainModel()
     }
 
-    @WorkerThread
     suspend fun getReviews(businessId: String): List<AvinturaReview> {
         return reviewDao.getReviews(businessId).asReviewDomainModel()
     }
 
-    @WorkerThread
     suspend fun getHours(businessId: String): List<AvinturaHour> {
         return hourDao.getHours(businessId).asHourDomainModel()
     }
 
-    @WorkerThread
     fun getFavoriteCount(): Flow<Int> {
         return favoriteDao.getFavoriteCount()
     }
 
-    @WorkerThread
-    suspend fun insert(favorite: Favorite) {
+    suspend fun insert(favorite: Favorite): Long {
         return favoriteDao.insert(favorite)
     }
 }

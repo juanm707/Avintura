@@ -22,20 +22,22 @@ import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.util.*
 
 
-class ViewPagerTopRecyclerViewAdapter(private val context: Context,
-                                      private val onBusinessClickListener: OnBusinessClickListener) : ListAdapter<AvinturaBusiness, ViewPagerTopRecyclerViewAdapter.TopBusinessViewHolder>(DiffCallback) {
+class ViewPagerTopRecyclerViewAdapter(
+    private val context: Context,
+    private val onBusinessClickListener: OnBusinessClickListener,
+    private val businesses: List<AvinturaBusiness>) : RecyclerView.Adapter<ViewPagerTopRecyclerViewAdapter.TopBusinessViewHolder>() {
 
-    companion object DiffCallback : DiffUtil.ItemCallback<AvinturaBusiness>() {
-        override fun areItemsTheSame(oldItem: AvinturaBusiness, newItem: AvinturaBusiness): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: AvinturaBusiness, newItem: AvinturaBusiness): Boolean {
-            return ((oldItem.name == newItem.name) && (oldItem.rating == newItem.rating) &&
-                    (oldItem.city == newItem.city) && (oldItem.reviewCount == newItem.reviewCount) &&
-                    (oldItem.imageUrl == newItem.imageUrl) && (oldItem.favorite == newItem.favorite))
-        }
-    }
+//    companion object DiffCallback : DiffUtil.ItemCallback<AvinturaBusiness>() {
+//        override fun areItemsTheSame(oldItem: AvinturaBusiness, newItem: AvinturaBusiness): Boolean {
+//            return oldItem.id == newItem.id && oldItem == newItem
+//        }
+//
+//        override fun areContentsTheSame(oldItem: AvinturaBusiness, newItem: AvinturaBusiness): Boolean {
+//            return ((oldItem.name == newItem.name) && (oldItem.rating == newItem.rating) &&
+//                    (oldItem.city == newItem.city) && (oldItem.reviewCount == newItem.reviewCount) &&
+//                    (oldItem.imageUrl == newItem.imageUrl) && (oldItem.favorite == newItem.favorite))
+//        }
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TopBusinessViewHolder {
         val layout = LayoutInflater.from(parent.context).inflate(R.layout.view_pager_top_item, parent, false)
@@ -43,7 +45,7 @@ class ViewPagerTopRecyclerViewAdapter(private val context: Context,
     }
 
     override fun onBindViewHolder(holder: TopBusinessViewHolder, position: Int) {
-        val business = currentList[position]
+        val business = businesses[position]
 
         holder.name.text = "${position+1}. ${business.name}"
         holder.starRating.setImageDrawable(business.rating.getStarRatingRegularDrawable(context))
@@ -65,7 +67,7 @@ class ViewPagerTopRecyclerViewAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        return currentList.size
+        return businesses.size
     }
 
     class TopBusinessViewHolder(itemView: View, private val onBusinessClickListener: OnBusinessClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener {

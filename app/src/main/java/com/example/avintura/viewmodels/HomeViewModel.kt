@@ -23,11 +23,11 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
 
     var position: Int = 0
 
-    init {
-        refreshDataFromNetwork()
-    }
+//    init {
+//        refreshDataFromNetwork()
+//    }
 
-    private fun refreshDataFromNetwork() {
+    fun refreshDataFromNetwork() {
         viewModelScope.launch {
             try {
                 repository.refreshBusinesses(0)

@@ -26,7 +26,8 @@ data class Business(
     val city: String,
     val price: String?,
     val distance: Float?,
-    @Embedded val coordinates: Coordinates
+    @Embedded val coordinates: Coordinates,
+    val featured: Int
 )
 
 @Entity

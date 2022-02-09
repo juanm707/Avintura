@@ -51,6 +51,12 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         setCategoryCardClick()
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d("onResumeHome", "Hello there ${homeViewModel.position}")
+        homeViewModel.refreshDataFromNetwork()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -75,11 +81,12 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     }
 
     private fun setBusinessesObserver() {
-        binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this)
+        // binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this)
         binding.homeViewPager.registerOnPageChangeCallback(getOnPageChangeCallbackObject())
         homeViewModel.businesses.observe(viewLifecycleOwner, { businesses ->
             binding.progressCircular.visibility = View.GONE
-            (binding.homeViewPager.adapter as ViewPagerTopRecyclerViewAdapter).submitList(businesses)
+            //binding.homeViewPager.adapter as ViewPagerTopRecyclerViewAdapter).submitList(businesses)
+            binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this, businesses)
             binding.homeViewPager.setCurrentItem(homeViewModel.position, false)
         })
     }

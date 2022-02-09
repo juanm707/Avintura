@@ -27,6 +27,9 @@ class BusinessDetailViewModel(private val repository: AvinturaRepository, privat
     private val _business = MutableLiveData<AvinturaBusinessDetail>()
     val business: LiveData<AvinturaBusinessDetail> = _business
 
+    private val _favoriteInsertion = MutableLiveData<Boolean>()
+    val favoriteInsertion: LiveData<Boolean> = _favoriteInsertion
+
     init {
         refreshDataFromNetwork()
     }
@@ -56,6 +59,18 @@ class BusinessDetailViewModel(private val repository: AvinturaRepository, privat
                 if (business.value == null)
                     _connectionStatusError.value = true
             }
+        }
+    }
+
+    fun updateFavorite() {
+        viewModelScope.launch {
+            val business = business.value
+            if (business != null) {
+                val favorite = Favorite(business.businessBasic.id, (!business.businessBasic.favorite).toInt())
+                val insertion = repository.insert(favorite)
+                _favoriteInsertion.value = insertion > 0
+            } else
+                _favoriteInsertion.value = false
         }
     }
 }

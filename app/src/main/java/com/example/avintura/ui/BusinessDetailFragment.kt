@@ -7,7 +7,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -33,16 +32,12 @@ import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentBusinessDetailBinding
 import com.example.avintura.domain.AvinturaBusinessDetail
-import com.example.avintura.domain.AvinturaHour
 import com.example.avintura.ui.adapter.HoursRecyclerViewAdapter
 import com.example.avintura.ui.adapter.ReviewRecyclerViewAdapter
 import com.example.avintura.util.getHoursOfOperationToday
 import com.example.avintura.util.getStarRatingRegularDrawable
 import com.example.avintura.viewmodels.BusinessDetailViewModel
 import com.example.avintura.viewmodels.BusinessDetailViewModelFactory
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.NoSuchElementException
 
 private const val STREET_ADDRESS_INDEX = 0
 private const val CITY_ADDRESS_INDEX = 1
@@ -56,6 +51,7 @@ class BusinessDetailFragment : Fragment() {
     private lateinit var businessDetailViewModelFactory: BusinessDetailViewModelFactory
 
     private lateinit var businessName: String
+    private var titleTextColor: Int = 0
 
     private var _binding: FragmentBusinessDetailBinding? = null
     // This property is only valid between onCreateView and
@@ -116,17 +112,7 @@ class BusinessDetailFragment : Fragment() {
             setCollapsedTitleTypeface(tf)
             setExpandedTitleTypeface(tf)
         }
-
         binding.detailToolbar.inflateMenu(R.menu.menu_detail)
-        binding.detailToolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.action_settings -> {
-                    Toast.makeText(requireContext(), "Settings selected", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                else -> super.onOptionsItemSelected(item)
-            }
-        }
     }
 
     private fun setUpPhotoObserver() {
@@ -158,6 +144,32 @@ class BusinessDetailFragment : Fragment() {
             }
             setPhoneData(business)
             setAddressAndNavigation(business)
+            businessDetailViewModel.favoriteInsertion.observe(viewLifecycleOwner, {
+                val result = if (it) "successful" else "unsuccessful"
+                updateFavoriteStatus(it, business)
+                Toast.makeText(requireContext(), "Favorite update was $result!", Toast.LENGTH_SHORT).show()
+            })
+            binding.detailToolbar.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_settings -> {
+                        Toast.makeText(requireContext(), "Settings selected", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    R.id.action_call -> {
+                        startCallIntent(business)
+                        true
+                    }
+                    R.id.action_share -> {
+                        startShareIntent(business)
+                        true
+                    }
+                    R.id.action_add -> {
+                        businessDetailViewModel.updateFavorite()
+                        true
+                    }
+                    else -> super.onOptionsItemSelected(item)
+                }
+            }
         })
     }
 
@@ -226,6 +238,24 @@ class BusinessDetailFragment : Fragment() {
         binding.priceAndCategory.text = "$price • ${business.categories ?: "No Categories"} • 1.5 mi"
     }
 
+    private fun updateFavoriteStatus(update: Boolean, business: AvinturaBusinessDetail) {
+        if (update) {
+            business.businessBasic.favorite = !(business.businessBasic.favorite)
+            val heartItem = binding.detailToolbar.menu.findItem(R.id.action_add)
+            if (business.businessBasic.favorite) {
+                heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_24)
+            } else {
+                heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_border_24)
+            }
+            if (titleTextColor != 0) {
+                DrawableCompat.setTint(
+                    DrawableCompat.wrap(heartItem.icon),
+                    titleTextColor
+                )
+            }
+        }
+    }
+
     private fun setPhoneData(business: AvinturaBusinessDetail) {
         if (business.displayPhone == "") {
             binding.phoneNumber.text = "No Phone Number"
@@ -233,14 +263,25 @@ class BusinessDetailFragment : Fragment() {
         } else
             binding.phoneNumber.text = business.displayPhone
 
-        // to call need permission? ACTION_CALL?
         binding.callButton.setOnClickListener {
-            val callIntent = Intent(
-                Intent.ACTION_DIAL,
-                Uri.parse("tel:${business.phone}")
-            )
-            startActivity(callIntent)
+            startCallIntent(business)
         }
+    }
+
+    private fun startCallIntent(business: AvinturaBusinessDetail) {
+        val callIntent = Intent(
+            Intent.ACTION_DIAL,
+            Uri.parse("tel:${business.phone}")
+        )
+        startActivity(callIntent)
+    }
+
+    private fun startShareIntent(business: AvinturaBusinessDetail) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra("sms_body", "Hey! Check this place out!\n${business.url}")
+        }
+        startActivity(shareIntent)
     }
 
     private fun setAddressAndNavigation(business: AvinturaBusinessDetail) {
@@ -337,6 +378,7 @@ class BusinessDetailFragment : Fragment() {
                     setNavigationButtonColor(vibrantSwatch.titleTextColor, vibrantSwatch.rgb)
 
                     setFavoriteMenuItemColor(vibrantSwatch.titleTextColor)
+                    titleTextColor = vibrantSwatch.titleTextColor
                 }
 
                 if (darkVibrantSwatch != null) {

@@ -107,7 +107,7 @@ data class YelpUser(
 /**
  * Convert Network results to database objects
  */
-fun YelpBusinessContainer.asDatabaseModel(): List<Business> {
+fun YelpBusinessContainer.asDatabaseModel(featured: Int): List<Business> {
     return businesses.map {
         Business(
             it.id,
@@ -121,7 +121,8 @@ fun YelpBusinessContainer.asDatabaseModel(): List<Business> {
             Coordinates(
                 it.coordinates.latitude,
                 it.coordinates.longitude
-            )
+            ),
+            featured
         )
     }
 }

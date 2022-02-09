@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BusinessDao {
 
-    @Query("SELECT b.*, f.favorite FROM Business b LEFT JOIN Favorite f ON f.id = b.id")
+    @Query("SELECT b.*, f.favorite FROM Business b LEFT JOIN Favorite f ON f.id = b.id WHERE featured = 1")
     suspend fun getBusinesses(): List<BusinessWithFavoriteStatus>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -22,4 +22,7 @@ interface BusinessDao {
 
     @Query("DELETE FROM Business")
     suspend fun deleteAll()
+
+    @Query("DELETE FROM Business WHERE featured = 1")
+    suspend fun deleteFeatured()
 }
