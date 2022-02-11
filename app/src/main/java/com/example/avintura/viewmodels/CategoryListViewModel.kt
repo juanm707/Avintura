@@ -24,7 +24,7 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
         refreshDataFromNetwork()
     }
 
-    private fun refreshDataFromNetwork() {
+     fun refreshDataFromNetwork() {
         viewModelScope.launch {
             try {
                 if (category != Category.Favorite) {

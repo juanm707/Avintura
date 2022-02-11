@@ -14,6 +14,7 @@
         <entry key="app/src/main/res/drawable/hot_air_balloon_svgrepo_com_tile.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_baseline_account_box_24.xml" value="0.3770833333333333" />
         <entry key="app/src/main/res/drawable/ic_baseline_broken_image_24.xml" value="0.22828947368421051" />
+        <entry key="app/src/main/res/drawable/ic_baseline_dining_24.xml" value="0.27109375" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_24_tile.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.22828947368421051" />
@@ -29,7 +30,7 @@
         <entry key="app/src/main/res/drawable/tab_selector.xml" value="0.2138157894736842" />
         <entry key="app/src/main/res/drawable/wine_svgrepo_com.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.29483695652173914" />
-        <entry key="app/src/main/res/layout/category_list_item.xml" value="0.9" />
+        <entry key="app/src/main/res/layout/category_list_item.xml" value="0.4066130473637176" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.29483695652173914" />
         <entry key="app/src/main/res/layout/fragment_blank.xml" value="0.1328551912568306" />
         <entry key="app/src/main/res/layout/fragment_business_detail.xml" value="0.25" />

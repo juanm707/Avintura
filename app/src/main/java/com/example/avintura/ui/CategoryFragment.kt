@@ -2,6 +2,7 @@ package com.example.avintura.ui
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter
 enum class Category {
     Winery, Dining, HotelSpa, Activity, Favorite // 0, 1, 2, 3, 4
 }
+
 class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener {
     private lateinit var categoryListViewModel: CategoryListViewModel
     private lateinit var categoryListViewModelFactory: CategoryListViewModelFactory
@@ -63,6 +65,12 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
         setToolbarItemsColor(categoryListViewModel.category.getProgressBarColor(requireContext()))
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (categoryListViewModel.category == Category.Favorite)
+            categoryListViewModel.refreshDataFromNetwork()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -80,6 +88,9 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
             setHasFixedSize(true)
         }
         categoryListViewModel.businesses.observe(viewLifecycleOwner, {
+            // TODO empty text
+            if (it.isEmpty())
+                Log.d("Category", "Empty")
             binding.categoryRecyclerView.apply {
                 binding.progressCircular.visibility = View.GONE
                 adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext(), this@CategoryFragment))

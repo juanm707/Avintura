@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -53,7 +54,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
 
     override fun onResume() {
         super.onResume()
-        Log.d("onResumeHome", "Hello there ${homeViewModel.position}")
+        Log.d("onResumeHome", "ViewPager2 Position: ${homeViewModel.position}")
         homeViewModel.refreshDataFromNetwork()
     }
 
@@ -69,6 +70,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     }
 
     private fun setUpToolbar() {
+        binding.homeToolbar.title = getString(R.string.app_name)
         binding.homeToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_profile -> {

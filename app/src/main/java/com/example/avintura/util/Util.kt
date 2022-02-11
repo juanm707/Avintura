@@ -239,7 +239,7 @@ fun getThingsToDoCategories(): String {
     return "tours,transport,limos,parks,gyms,galleries,yoga,theater,martialarts,bikerentals,partybusrentals,museums,landmarks,playgrounds,hiking,kids_activities,dancestudio,golf,meditationcenters,farms,festivals,farmersmarket,movietheaters,rafting,swimmingpools,boating,foodtours,social_clubs,bikes,bustours,hot_air_balloons,artclasses,walkingtours,paddleboarding,djs,active,arts,dog_parks,recreation,horsebackriding,horse_boarding"
 }
 
-fun setUIColorByCategory(category: Category, viewGroup: ViewGroup, toolbar: Toolbar, context: Context, mapExtension: String) {
+fun setUIColorByCategory(category: Category, viewGroup: ViewGroup, toolbar: Toolbar, context: Context, mapTitleExtension: String) {
     var bgColor: Int = ContextCompat.getColor(context, R.color.middle_blue_green)
     var title = "Category"
 
@@ -267,5 +267,5 @@ fun setUIColorByCategory(category: Category, viewGroup: ViewGroup, toolbar: Tool
     }
 
     viewGroup.setBackgroundColor(bgColor)
-    toolbar.title = title + mapExtension
+    toolbar.title = title + mapTitleExtension
 }

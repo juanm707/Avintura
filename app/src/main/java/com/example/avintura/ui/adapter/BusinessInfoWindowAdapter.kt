@@ -13,6 +13,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toBitmap
 import coil.imageLoader
 import coil.load
 import coil.request.ImageRequest
@@ -87,9 +89,17 @@ class BusinessClusterRenderer(
     private val clusterIconGenerator: IconGenerator = IconGenerator(context.applicationContext)
 
     override fun onBeforeClusterItemRendered(item: AvinturaCategoryBusiness, markerOptions: MarkerOptions) {
-        val markerHue = getMarkerHue(category)
-        val markerDescriptor = BitmapDescriptorFactory.defaultMarker(markerHue)
-        markerOptions.icon(markerDescriptor).title(item.title).snippet(item.snippet)
+        val iconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_dining_24)
+        if (iconDrawable != null) {
+            DrawableCompat.setTint(DrawableCompat.wrap(iconDrawable), ContextCompat.getColor(context,
+                R.color.alloy_orange
+            ))
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconDrawable.toBitmap())).title(item.title).snippet(item.snippet)
+        } else {
+            val markerHue = getMarkerHue(category)
+            val markerDescriptor = BitmapDescriptorFactory.defaultMarker(markerHue)
+            markerOptions.icon(markerDescriptor).title(item.title).snippet(item.snippet)
+        }
     }
 
     override fun onClusterItemRendered(clusterItem: AvinturaCategoryBusiness, marker: Marker) {
