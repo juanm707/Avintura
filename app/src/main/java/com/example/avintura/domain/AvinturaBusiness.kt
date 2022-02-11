@@ -73,6 +73,9 @@ data class AvinturaCategoryBusiness(
     }
 
     override fun getSnippet(): String? {
-        return price ?: "No Price"
+        val favoriteExt = if (businessBasic.favorite) " • ♥" else ""
+        if (price.isNullOrBlank())
+            return "No Price$favoriteExt"
+        return "$price$favoriteExt"
     }
 }

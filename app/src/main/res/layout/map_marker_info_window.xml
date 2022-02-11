@@ -70,5 +70,19 @@
             app:layout_constraintTop_toBottomOf="@id/snippet"
             tools:src="@drawable/stars_small_0" />
 
+        <TextView
+            android:id="@+id/review_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/rating_image"
+            app:layout_constraintEnd_toEndOf="@+id/title"
+            app:layout_constraintStart_toEndOf="@id/rating_image"
+            app:layout_constraintTop_toTopOf="@+id/rating_image"
+            tools:text="2345" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

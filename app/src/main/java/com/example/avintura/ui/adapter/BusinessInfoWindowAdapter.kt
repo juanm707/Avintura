@@ -51,14 +51,16 @@ class BusinessInfoWindowAdapter(val context: Context)  : GoogleMap.InfoWindowAda
         val tvSnippet = view.findViewById<TextView>(R.id.snippet)
         val ratingImage = view.findViewById<ImageView>(R.id.rating_image)
         val businessImage = view.findViewById<ImageView>(R.id.business_image)
+        val reviewCount = view.findViewById<TextView>(R.id.review_count)
 
         tvTitle.text = marker.title
         tvSnippet.text = marker.snippet
 
         val businessItem = marker.tag as AvinturaCategoryBusiness
         ratingImage.setImageDrawable(businessItem.businessBasic.rating.getStarRatingSmallDrawable(context))
+        reviewCount.text = businessItem.businessBasic.reviewCount.toString()
 
-        // doesn't work imageView.load(url) so have to use image request builder
+        // imageView.load(url) doesn't work so have to use image request builder
         val imageRequest = ImageRequest.Builder(context)
             .error(R.drawable.ic_baseline_broken_image_24)
             .data(businessItem.businessBasic.imageUrl)
@@ -70,7 +72,7 @@ class BusinessInfoWindowAdapter(val context: Context)  : GoogleMap.InfoWindowAda
     }
 }
 
-class MarkerCallback(val marker: Marker) : ImageRequest.Listener {
+class MarkerCallback(private val marker: Marker) : ImageRequest.Listener {
     override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {
         if (marker.isInfoWindowShown) {
             marker.hideInfoWindow()

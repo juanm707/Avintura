@@ -3,6 +3,7 @@ package com.example.avintura.ui
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +40,7 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
     private lateinit var mapBusinessListViewModel: MapBusinessListViewModel
     private lateinit var mapBusinessListViewModelFactory: MapBusinessListViewModelFactory
 
-    private lateinit var map: GoogleMap
+    private var map: GoogleMap? = null
 
     private lateinit var clusterManager: ClusterManager<AvinturaCategoryBusiness>
 
@@ -47,28 +48,31 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var contentView: View
 
     @SuppressLint("PotentialBehaviorOverride")
     private val callback = OnMapReadyCallback { googleMap ->
-        map = googleMap
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        setMapSettings(googleMap)
-        setUpClusterManager(googleMap)
+        if (map == null) {
+            map = googleMap
+            /**
+             * Manipulates the map once available.
+             * This callback is triggered when the map is ready to be used.
+             * This is where we can add markers or lines, add listeners or move the camera.
+             * If Google Play services is not installed on the device, the user will be prompted to
+             * install it inside the SupportMapFragment. This method will only be triggered once the
+             * user has installed Google Play services and returned to the app.
+             */
+            setMapSettings(googleMap)
+            setUpClusterManager(googleMap)
 
-        googleMap.setInfoWindowAdapter(clusterManager.markerManager) // don't need this...
+            googleMap.setInfoWindowAdapter(clusterManager.markerManager) // don't need this...
 
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-        setMapListeners(googleMap)
+            // Point the map's listeners at the listeners implemented by the cluster
+            // manager.
+            setMapListeners(googleMap)
 
-        observeBusinesses(googleMap)
+            observeBusinesses(googleMap)
+        }
     }
 
     override fun onCreateView(
@@ -108,7 +112,8 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
 
     override fun onClusterItemInfoWindowClick(item: AvinturaCategoryBusiness?) {
         if (item != null) {
-            Toast.makeText(requireContext(), "Clicked info window: " + item.businessBasic.name, Toast.LENGTH_SHORT).show()
+            val action = MapsFragmentDirections.actionMapsFragmentToBusinessDetailFragment(item.businessBasic.id, item.businessBasic.name)
+            findNavController().navigate(action)
         }
     }
 
@@ -164,10 +169,15 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         val bounds = builder.build()
 
         return try {
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (16 * (resources.displayMetrics.density)).toInt()))
-            true
+            if (map != null) {
+                map!!.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (16 * (resources.displayMetrics.density)).toInt()))
+                true
+            }
+            else {
+                return false
+            }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.d("MapFragment", "Error loading or zooming cluster. ${e.message}")
             false
         }
     }
@@ -176,5 +186,6 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         val arrowIcon = (binding.mapToolbar.navigationIcon as DrawerArrowDrawable)
         arrowIcon.color = color
         binding.mapToolbar.setTitleTextColor(color)
+        requireActivity().window.statusBarColor = color
     }
 }
