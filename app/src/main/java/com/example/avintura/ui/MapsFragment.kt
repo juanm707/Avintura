@@ -35,7 +35,8 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 
-
+// https://stackoverflow.com/questions/37383749/how-to-properly-use-the-google-maps-fragment-in-a-navigation-drawer-activity-fra
+// https://stackoverflow.com/questions/14083950/duplicate-id-tag-null-or-parent-id-with-another-fragment-for-com-google-androi
 class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaCategoryBusiness>, ClusterManager.OnClusterItemInfoWindowClickListener<AvinturaCategoryBusiness> {
     private lateinit var mapBusinessListViewModel: MapBusinessListViewModel
     private lateinit var mapBusinessListViewModelFactory: MapBusinessListViewModelFactory

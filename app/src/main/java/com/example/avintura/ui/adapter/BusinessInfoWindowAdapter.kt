@@ -1,11 +1,7 @@
 package com.example.avintura.ui.adapter
 
 import android.content.Context
-import android.graphics.BlendModeColorFilter
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.media.Image
-import android.util.Log
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -16,12 +12,12 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
 import coil.imageLoader
-import coil.load
 import coil.request.ImageRequest
 import coil.request.ImageResult
 import com.example.avintura.R
 import com.example.avintura.domain.AvinturaCategoryBusiness
 import com.example.avintura.ui.Category
+import com.example.avintura.util.getProgressBarColor
 import com.example.avintura.util.getStarRatingSmallDrawable
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -91,11 +87,11 @@ class BusinessClusterRenderer(
     private val clusterIconGenerator: IconGenerator = IconGenerator(context.applicationContext)
 
     override fun onBeforeClusterItemRendered(item: AvinturaCategoryBusiness, markerOptions: MarkerOptions) {
-        val iconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_baseline_dining_24)
+        val iconDrawable = getCategoryDrawableMarkerIcon(context, category)
         if (iconDrawable != null) {
-            DrawableCompat.setTint(DrawableCompat.wrap(iconDrawable), ContextCompat.getColor(context,
-                R.color.alloy_orange
-            ))
+            if (category != null) {
+                DrawableCompat.setTint(DrawableCompat.wrap(iconDrawable), category.getProgressBarColor(context))
+            }
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(iconDrawable.toBitmap())).title(item.title).snippet(item.snippet)
         } else {
             val markerHue = getMarkerHue(category)
@@ -141,6 +137,16 @@ class BusinessClusterRenderer(
             Category.Favorite -> BitmapDescriptorFactory.HUE_ROSE
             Category.Dining -> BitmapDescriptorFactory.HUE_ORANGE
             else -> BitmapDescriptorFactory.HUE_RED
+        }
+    }
+
+    private fun getCategoryDrawableMarkerIcon(context: Context, category: Category?): Drawable? {
+        return when (category) {
+            Category.Activity -> ContextCompat.getDrawable(context, R.drawable.location_pointer_symbol_vectors__4_)
+            Category.HotelSpa -> ContextCompat.getDrawable(context, R.drawable.hotel_marker_icon)
+            Category.Winery -> ContextCompat.getDrawable(context, R.drawable.winery_marker_icon)
+            Category.Dining -> ContextCompat.getDrawable(context, R.drawable.dining_marker_icon)
+            else -> null
         }
     }
 }

@@ -13,17 +13,22 @@
         <entry key="app/src/main/res/drawable/food_tile.xml" value="0.2138157894736842" />
         <entry key="app/src/main/res/drawable/hot_air_balloon_svgrepo_com_tile.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_baseline_account_box_24.xml" value="0.3770833333333333" />
+        <entry key="app/src/main/res/drawable/ic_baseline_attractions_32.xml" value="0.25390625" />
         <entry key="app/src/main/res/drawable/ic_baseline_broken_image_24.xml" value="0.22828947368421051" />
         <entry key="app/src/main/res/drawable/ic_baseline_dining_24.xml" value="0.27109375" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_baseline_favorite_24_tile.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_baseline_image_24.xml" value="0.22828947368421051" />
+        <entry key="app/src/main/res/drawable/ic_baseline_wine_bar_24.xml" value="0.2546875" />
+        <entry key="app/src/main/res/drawable/ic_baseline_wine_bar_32.xml" value="0.2546875" />
         <entry key="app/src/main/res/drawable/ic_hot_air_balloon_svgrepo_com_tile.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_hotel_svgrepo_com.xml" value="0.21414473684210528" />
+        <entry key="app/src/main/res/drawable/ic_location_pointer_symbol_vectors.xml" value="0.25390625" />
         <entry key="app/src/main/res/drawable/ic_round_person_pin_24.xml" value="0.3770833333333333" />
         <entry key="app/src/main/res/drawable/ic_round_search_24.xml" value="0.33958333333333335" />
         <entry key="app/src/main/res/drawable/ic_wine_svgrepo_com.xml" value="0.21414473684210528" />
         <entry key="app/src/main/res/drawable/ic_wine_svgrepo_com_tile.xml" value="0.21414473684210528" />
+        <entry key="app/src/main/res/drawable/location_pointer_symbol_vectors.xml" value="0.25390625" />
         <entry key="app/src/main/res/drawable/scrim_bottom.xml" value="0.3385416666666667" />
         <entry key="app/src/main/res/drawable/scrim_right_to_left.xml" value="0.2138157894736842" />
         <entry key="app/src/main/res/drawable/splash_image.xml" value="0.33958333333333335" />
