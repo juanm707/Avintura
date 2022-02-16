@@ -136,6 +136,7 @@ class BusinessDetailFragment : Fragment() {
             setPriceAndCategory(business)
             setCollapsingToolbarData(business)
             setClaimedStatus(business)
+            setFavoriteMenuItem(business)
             binding.reviewCount.text = resources.getQuantityString(R.plurals.review_count, business.businessBasic.reviewCount, business.businessBasic.reviewCount)
             binding.yelpLogo.setOnClickListener {
                 val webpage: Uri = Uri.parse(business.url)
@@ -144,33 +145,33 @@ class BusinessDetailFragment : Fragment() {
             }
             setPhoneData(business)
             setAddressAndNavigation(business)
-            businessDetailViewModel.favoriteInsertion.observe(viewLifecycleOwner, {
-                val result = if (it) "successful" else "unsuccessful"
-                updateFavoriteStatus(it, business)
-                Toast.makeText(requireContext(), "Favorite update was $result!", Toast.LENGTH_SHORT).show()
-            })
-            binding.detailToolbar.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.action_settings -> {
-                        Toast.makeText(requireContext(), "Settings selected", Toast.LENGTH_SHORT).show()
-                        true
-                    }
-                    R.id.action_call -> {
-                        startCallIntent(business)
-                        true
-                    }
-                    R.id.action_share -> {
-                        startShareIntent(business)
-                        true
-                    }
-                    R.id.action_add -> {
-                        businessDetailViewModel.updateFavorite()
-                        true
-                    }
-                    else -> super.onOptionsItemSelected(item)
-                }
-            }
+            setUpFavoriteUpdateObserver(business)
+            setUpToolbarMenuItemListener(business)
         })
+    }
+
+    private fun setUpToolbarMenuItemListener(business: AvinturaBusinessDetail) {
+        binding.detailToolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_settings -> {
+                    Toast.makeText(requireContext(), "Settings selected", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.action_call -> {
+                    startCallIntent(business)
+                    true
+                }
+                R.id.action_share -> {
+                    startShareIntent(business)
+                    true
+                }
+                R.id.action_add -> {
+                    businessDetailViewModel.updateFavorite()
+                    true
+                }
+                else -> super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     private fun setUpReviewsObserver() {
@@ -207,6 +208,14 @@ class BusinessDetailFragment : Fragment() {
                     adapter = HoursRecyclerViewAdapter(hours)
                 }
             }
+        })
+    }
+
+    private fun setUpFavoriteUpdateObserver(business: AvinturaBusinessDetail) {
+        businessDetailViewModel.favoriteInsertion.observe(viewLifecycleOwner, {
+            val result = if (it) "successful" else "unsuccessful"
+            updateFavoriteStatus(it, business)
+            Toast.makeText(requireContext(), "Favorite update was $result!", Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -377,7 +386,9 @@ class BusinessDetailFragment : Fragment() {
 
                     setNavigationButtonColor(vibrantSwatch.titleTextColor, vibrantSwatch.rgb)
 
+                    // heart color
                     setFavoriteMenuItemColor(vibrantSwatch.titleTextColor)
+
                     titleTextColor = vibrantSwatch.titleTextColor
                 }
 
@@ -444,21 +455,24 @@ class BusinessDetailFragment : Fragment() {
         }
     }
 
+    private fun setFavoriteMenuItem(business: AvinturaBusinessDetail) {
+        // fav icon color
+        val heartItem = binding.detailToolbar.menu.findItem(R.id.action_add)
+        val favoriteStatus = business.businessBasic.favorite
+
+        if (favoriteStatus) {
+            heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_24)
+        } else {
+            heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_border_24)
+        }
+    }
+
     private fun setFavoriteMenuItemColor(color: Int) {
         // fav icon color
         val heartItem = binding.detailToolbar.menu.findItem(R.id.action_add)
-        val favoriteStatus = businessDetailViewModel.business.value?.businessBasic?.favorite
-
-        if (favoriteStatus != null) {
-            if (favoriteStatus) {
-                heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_24)
-            } else {
-                heartItem.icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_favorite_border_24)
-            }
-            DrawableCompat.setTint(
-                DrawableCompat.wrap(heartItem.icon),
-                color
-            )
-        }
+        DrawableCompat.setTint(
+            DrawableCompat.wrap(heartItem.icon),
+            color
+        )
     }
 }

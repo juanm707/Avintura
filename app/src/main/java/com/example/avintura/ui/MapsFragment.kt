@@ -1,14 +1,18 @@
 package com.example.avintura.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
-import android.graphics.Color
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -49,9 +53,10 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private lateinit var contentView: View
+    private var locationPermissionGranted: Boolean = false
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    @SuppressLint("PotentialBehaviorOverride")
+    @SuppressLint("PotentialBehaviorOverride", "MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
         if (map == null) {
             map = googleMap
@@ -73,6 +78,59 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
             setMapListeners(googleMap)
 
             observeBusinesses(googleMap)
+
+            when {
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                    // You can use the API that requires the permission.
+                    googleMap.isMyLocationEnabled = true
+                    Log.d("PermissionCheck", "Already granted")
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
+                    // In an educational UI, explain to the user why your app requires this
+                    // permission for a specific feature to behave as expected. In this UI,
+                    // include a "cancel" or "no thanks" button that allows the user to
+                    // continue using your app without granting the permission.
+                    //showInContextUI(...)
+                    Log.d("PermissionCheck", "Show request permission rationale")
+                }
+                else -> {
+                    // You can directly ask for the permission.
+                    // The registered ActivityResultCallback gets the result of this request.
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // TODO when user is prompted first time to enable location by permission, it doesnt update the map to show current location
+        // however it works when user opens map fragment after the first time.
+        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permission is granted. Continue the action or workflow in your
+                // app.
+                Log.d("PermissionCheck", "isGranted")
+                val gMap = map
+                if (gMap != null) {
+                    Log.d("PermissionCheck", "Map not null, enabling location")
+                    gMap.isMyLocationEnabled = true
+                }
+            } else {
+                // Explain to the user that the feature is unavailable because the
+                // features requires a permission that the user has denied. At the
+                // same time, respect the user's decision. Don't link to system
+                // settings in an effort to convince the user to change their
+                // decision.
+                Log.d("PermissionCheck", "Explaining")
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setMessage("Avintura uses your location to display better results.")
+                    .setPositiveButton("Close") { dialog, id ->
+
+                    }
+                builder.show()
+            }
         }
     }
 
@@ -126,8 +184,10 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
 
     private fun setMapSettings(googleMap: GoogleMap) {
         googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style))
-        googleMap.uiSettings.isZoomControlsEnabled = true
-        googleMap.uiSettings.isMyLocationButtonEnabled = true
+        googleMap.uiSettings.apply {
+            isZoomControlsEnabled = true
+            isCompassEnabled = true
+        }
     }
 
     @SuppressLint("PotentialBehaviorOverride")
@@ -170,8 +230,9 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         val bounds = builder.build()
 
         return try {
-            if (map != null) {
-                map!!.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (16 * (resources.displayMetrics.density)).toInt()))
+            val gMap = map
+            if (gMap != null) {
+                gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (16 * (resources.displayMetrics.density)).toInt()))
                 true
             }
             else {

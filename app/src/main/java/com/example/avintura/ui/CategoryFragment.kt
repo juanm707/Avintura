@@ -37,6 +37,8 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
     private lateinit var categoryListViewModel: CategoryListViewModel
     private lateinit var categoryListViewModelFactory: CategoryListViewModelFactory
 
+    private var showMap = false
+
     private var _binding: FragmentCategoryBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -89,11 +91,16 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
         }
         categoryListViewModel.businesses.observe(viewLifecycleOwner, {
             // TODO empty text
-            if (it.isEmpty())
+            if (it.isEmpty()) {
+                showMap = false
                 Log.d("Category", "Empty")
-            binding.categoryRecyclerView.apply {
-                binding.progressCircular.visibility = View.GONE
-                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext(), this@CategoryFragment))
+            }
+            else {
+                showMap = true
+                binding.categoryRecyclerView.apply {
+                    binding.progressCircular.visibility = View.GONE
+                    adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext(), this@CategoryFragment))
+                }
             }
         })
     }
@@ -103,11 +110,16 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
         binding.categoryToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_map -> {
-                    val action = CategoryFragmentDirections.actionCategoryFragmentToMapsFragment(
-                        categoryListViewModel.category
-                    )
-                    findNavController().navigate(action)
-                    true
+                    if (!showMap) {
+                        Toast.makeText(requireContext(), "No locations available to display.", Toast.LENGTH_SHORT).show()
+                        true
+                    } else {
+                        val action = CategoryFragmentDirections.actionCategoryFragmentToMapsFragment(
+                            categoryListViewModel.category
+                        )
+                        findNavController().navigate(action)
+                        true
+                    }
                 }
                 else -> super.onOptionsItemSelected(item)
             }

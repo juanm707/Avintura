@@ -142,10 +142,11 @@ class BusinessClusterRenderer(
 
     private fun getCategoryDrawableMarkerIcon(context: Context, category: Category?): Drawable? {
         return when (category) {
-            Category.Activity -> ContextCompat.getDrawable(context, R.drawable.location_pointer_symbol_vectors__4_)
+            Category.Activity -> ContextCompat.getDrawable(context, R.drawable.things_to_do_marker_icon)
             Category.HotelSpa -> ContextCompat.getDrawable(context, R.drawable.hotel_marker_icon)
             Category.Winery -> ContextCompat.getDrawable(context, R.drawable.winery_marker_icon)
             Category.Dining -> ContextCompat.getDrawable(context, R.drawable.dining_marker_icon)
+            Category.Favorite -> ContextCompat.getDrawable(context, R.drawable.location_pointer_symbol_vectors__5_)
             else -> null
         }
     }
