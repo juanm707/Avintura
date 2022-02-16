@@ -11,6 +11,7 @@ import coil.load
 import com.example.avintura.R
 import com.example.avintura.domain.AvinturaCategoryBusiness
 import com.example.avintura.util.getStarRatingRegularDrawable
+import com.example.avintura.util.metersToMiles
 
 
 // TODO list adapter with diffutil or pagination
@@ -36,7 +37,7 @@ class CategoryResultListRecyclerViewAdapter(private val businesses: List<Avintur
         } else
             business.price
 
-        var dist = "distance n/a"
+        var dist = "Distance n/a"
         if (business.distance != null)
             dist = metersToMiles(business.distance)
         holder.priceAndMiles.text = "$price • ${dist}"
@@ -65,9 +66,5 @@ class CategoryResultListRecyclerViewAdapter(private val businesses: List<Avintur
         override fun onClick(v: View?) {
             onBusinessClickListener.onBusinessClick(adapterPosition)
         }
-    }
-
-    private fun metersToMiles(distance: Float): String {
-        return String.format("%.1f", distance/1609) + " mi"
     }
 }

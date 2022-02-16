@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -151,7 +150,13 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
-        setUIColorByCategory(mapBusinessListViewModel.category, binding.mapToolbar, binding.mapToolbar, requireContext(), " Map")
+        setUIColorByCategory(
+            mapBusinessListViewModel.category,
+            binding.mapToolbar,
+            binding.mapToolbar,
+            requireContext(),
+            " Map"
+        )
         setToolbarItemsColor(mapBusinessListViewModel.category.getProgressBarColor(requireContext()))
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)

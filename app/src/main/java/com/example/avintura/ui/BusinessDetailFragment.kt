@@ -1,14 +1,18 @@
 package com.example.avintura.ui
 
+import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -36,8 +40,11 @@ import com.example.avintura.ui.adapter.HoursRecyclerViewAdapter
 import com.example.avintura.ui.adapter.ReviewRecyclerViewAdapter
 import com.example.avintura.util.getHoursOfOperationToday
 import com.example.avintura.util.getStarRatingRegularDrawable
+import com.example.avintura.util.metersToMiles
 import com.example.avintura.viewmodels.BusinessDetailViewModel
 import com.example.avintura.viewmodels.BusinessDetailViewModelFactory
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 private const val STREET_ADDRESS_INDEX = 0
 private const val CITY_ADDRESS_INDEX = 1
@@ -52,6 +59,7 @@ class BusinessDetailFragment : Fragment() {
 
     private lateinit var businessName: String
     private var titleTextColor: Int = 0
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private var _binding: FragmentBusinessDetailBinding? = null
     // This property is only valid between onCreateView and
@@ -69,6 +77,7 @@ class BusinessDetailFragment : Fragment() {
         )
         businessName = BusinessDetailFragmentArgs.fromBundle(requireArguments()).name
         businessDetailViewModel = ViewModelProvider(this, businessDetailViewModelFactory)[BusinessDetailViewModel::class.java]
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
         return binding.root
     }
 
@@ -133,7 +142,7 @@ class BusinessDetailFragment : Fragment() {
         businessDetailViewModel.business.observe(viewLifecycleOwner, { business ->
             setRatingImage(business)
             setScrollToSectionClickListeners()
-            setPriceAndCategory(business)
+            setPriceAndCategoryAndDistance(business)
             setCollapsingToolbarData(business)
             setClaimedStatus(business)
             setFavoriteMenuItem(business)
@@ -175,7 +184,6 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setUpReviewsObserver() {
-        // Todo sort reviews by date
         binding.reviewCardView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
         businessDetailViewModel.reviews.observe(viewLifecycleOwner, { reviews ->
             binding.reviewRecyclerView.apply {
@@ -236,15 +244,41 @@ class BusinessDetailFragment : Fragment() {
         }
     }
 
-    private fun setPriceAndCategory(business: AvinturaBusinessDetail) {
-        // TODO use location if possible
+    private fun setPriceAndCategoryAndDistance(business: AvinturaBusinessDetail) {
         // "$$ • Wineries, Venues &amp; Event Spaces • 1.5 mi"
         val price = if (business.price == "") {
             "No Price"
         } else
             business.price
 
-        binding.priceAndCategory.text = "$price • ${business.categories ?: "No Categories"} • 1.5 mi"
+        val priceAndCategoryText = "$price • ${business.categories ?: "No Categories"}"
+        setDistanceText(priceAndCategoryText, business)
+    }
+
+    private fun setDistanceText(priceAndCategoryText: String, business: AvinturaBusinessDetail) {
+        when {
+            ContextCompat.checkSelfPermission(requireActivity().applicationContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                // You can use the API that requires the permission.
+                Log.d("PermissionCheck", "Fused")
+                fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
+                    val businessLocation = Location(business.businessBasic.name)
+                        .apply {
+                            latitude = business.coordinates.latitude
+                            longitude = business.coordinates.longitude
+                        }
+                    val currentLocation = Location("Current")
+                        .apply {
+                            latitude = location.latitude
+                            longitude = location.longitude
+                        }
+                    val distanceFromCurrentToBusiness = metersToMiles(currentLocation.distanceTo(businessLocation))
+                    binding.priceAndCategory.text = "$priceAndCategoryText • $distanceFromCurrentToBusiness"
+                }
+            }
+            else -> {
+                binding.priceAndCategory.text = "$priceAndCategoryText"
+            }
+        }
     }
 
     private fun updateFavoriteStatus(update: Boolean, business: AvinturaBusinessDetail) {

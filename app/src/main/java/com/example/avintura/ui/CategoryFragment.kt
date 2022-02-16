@@ -1,6 +1,5 @@
 package com.example.avintura.ui
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -89,18 +88,21 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
         }
-        categoryListViewModel.businesses.observe(viewLifecycleOwner, {
-            // TODO empty text
-            if (it.isEmpty()) {
+        categoryListViewModel.businesses.observe(viewLifecycleOwner, { resultList ->
+            if (resultList.isEmpty()) {
                 showMap = false
                 Log.d("Category", "Empty")
+                binding.emptyListText.apply {
+                    visibility = View.VISIBLE
+                    setTextColor(categoryListViewModel.category.getProgressBarColor(requireContext()))
+                }
             }
             else {
                 showMap = true
-                binding.categoryRecyclerView.apply {
-                    binding.progressCircular.visibility = View.GONE
-                    adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(it, requireContext(), this@CategoryFragment))
-                }
+            }
+            binding.categoryRecyclerView.apply {
+                binding.progressCircular.visibility = View.GONE
+                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(resultList, requireContext(), this@CategoryFragment))
             }
         })
     }

@@ -28,31 +28,8 @@
             app:layout_scrollFlags="scroll|enterAlways|snap"
             app:popupTheme="@style/Theme.Avintura.PopupOverlay" />
 
-<!--        <com.google.android.material.tabs.TabLayout-->
-<!--            android:id="@+id/category_tablayout"-->
-<!--            android:background="@android:color/transparent"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:tabIndicatorHeight="3dp">-->
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:icon="@drawable/ic_baseline_list_32"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"/>-->
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:icon="@drawable/ic_baseline_map_24"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"/>-->
-
-<!--        </com.google.android.material.tabs.TabLayout>-->
-
         <!-- nice [app:contentInsetStartWithNavigation="0dp"] and also titleMarginStart=0dp -->
     </com.google.android.material.appbar.AppBarLayout>
-
-<!--    <androidx.viewpager2.widget.ViewPager2-->
-<!--        android:id="@+id/category_view_pager"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />-->
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_circular"
@@ -60,6 +37,18 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/empty_list_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="8dp"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+        android:text="No locations"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/category_recycler_view"
