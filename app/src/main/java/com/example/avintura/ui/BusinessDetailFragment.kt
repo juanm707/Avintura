@@ -353,7 +353,6 @@ class BusinessDetailFragment : Fragment() {
         if (business.isClaimed != null) {
             if (business.isClaimed) {
                 binding.claimedImage.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_verified_24))
-                binding.claimedText.text = "Claimed"
             }
         }
     }

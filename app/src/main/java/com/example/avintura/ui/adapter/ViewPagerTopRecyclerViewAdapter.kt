@@ -20,6 +20,7 @@ import com.example.avintura.R
 import com.example.avintura.database.BusinessWithFavoriteStatus
 import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.util.*
+import com.google.android.material.card.MaterialCardView
 
 
 class ViewPagerTopRecyclerViewAdapter(
@@ -77,9 +78,10 @@ class ViewPagerTopRecyclerViewAdapter(
         val reviewCount: TextView = itemView.findViewById(R.id.review_count)
         val city: TextView = itemView.findViewById(R.id.business_city)
         val favoriteIcon: ImageView = itemView.findViewById(R.id.favorite_icon)
+        val mainCardView: MaterialCardView = itemView.findViewById(R.id.main_card_view)
 
         init {
-            itemView.setOnClickListener(this)
+            mainCardView.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {

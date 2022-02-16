@@ -123,25 +123,12 @@
                         android:id="@+id/claimed_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        tools:src="@drawable/ic_baseline_verified_24"
-                        app:layout_constraintBottom_toBottomOf="@+id/claimed_text"
-                        app:layout_constraintEnd_toStartOf="@+id/claimed_text"
-                        app:layout_constraintTop_toTopOf="@+id/claimed_text"
-                        app:tint="@color/teal_claimed" />
-
-                    <TextView
-                        android:id="@+id/claimed_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
                         android:layout_marginEnd="8dp"
-                        tools:text="Claimed"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                        android:textColor="@color/teal_claimed"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/detail_title"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/detail_title" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/teal_claimed"
+                        tools:src="@drawable/ic_baseline_verified_24" />
 
                     <TextView
                         android:id="@+id/price_and_category"
