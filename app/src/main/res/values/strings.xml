@@ -129,4 +129,10 @@
     </plurals>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="view_map">View Map</string>
+    <string name="categories">Categories</string>
+    <string name="category_description">Explore Wine Country and discover famous wineries, amazing restaurants, relaxing hotels and spas, and adventurous fun! Find these places with just the click of a button or search for something specific!</string>
+    <string name="share_favorites">Share favorites</string>
+    <string name="share_favorite_description">Save your favorite spots and share them or any other place with your friends and family!</string>
+    <string name="yelp_description">Avintura gets its results from Yelp, so you know you have the most updated info, such as hours, contact info, location and more. Reviews and ratings are also retrieved from Yelp to help you decide which place to visit, but we encourage everyone to visit everything Wine Country has to offer!</string>
+    <string name="finish">Finish</string>
 </resources>

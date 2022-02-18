@@ -33,10 +33,19 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d("onCreate", "HomeFragment created")
+        if (!onBoardingFinished()) {
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToViewPagerFragment())
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("onCreateView", "HomeFragment created view")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -61,6 +70,12 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        Log.d("HomeFragment:OnDestroyView", "Called")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("HomeFragment:OnDestroy", "Called")
     }
 
     private fun setUpNavigation() {
@@ -130,6 +145,11 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
                 homeViewModel.position = position
             }
         }
+    }
+
+    private fun onBoardingFinished(): Boolean {
+        val sharedPref = requireActivity().getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
+        return sharedPref.getBoolean("Finished", false)
     }
 
     override fun onBusinessClick(position: Int) {
