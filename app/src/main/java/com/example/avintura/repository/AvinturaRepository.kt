@@ -100,8 +100,9 @@ class AvinturaRepository(
             categoryTypeDao.getBusinesses(categoryType.ordinal).asCategoryDomainModel()
     }
 
-    suspend fun getBusiness(businessId: String): AvinturaBusinessDetail {
-        return businessDetailDao.getBusiness(businessId).asDomainModel()
+    suspend fun getBusiness(businessId: String): AvinturaBusinessDetail? {
+        val bd = businessDetailDao.getBusiness(businessId) ?: return null
+        return bd.asDomainModel()
     }
 
     suspend fun getPhotos(businessId: String): List<AvinturaPhoto> {

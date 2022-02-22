@@ -1,10 +1,8 @@
 package com.example.avintura.util
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
+import android.animation.*
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -279,4 +277,25 @@ fun setUIColorByCategory(
 
 fun metersToMiles(distance: Float): String {
     return String.format("%.1f", distance/1609) + " mi"
+}
+
+fun getOnboardAnimatorSet(resources: Resources, cardView: View, title: View, description: View): AnimatorSet {
+    val animatorSet = AnimatorSet()
+    animatorSet.playTogether(
+        getMoveObjectAnimator(resources, cardView),
+        getMoveObjectAnimator(resources, title),
+        getMoveObjectAnimator(resources, description),
+        getFadeInObjectAnimator(cardView),
+        getFadeInObjectAnimator(title),
+        getFadeInObjectAnimator(description),
+    )
+    return animatorSet
+}
+
+private fun getMoveObjectAnimator(resources: Resources, view: View): ObjectAnimator {
+    return ObjectAnimator.ofFloat(view, View.TRANSLATION_X, -resources.displayMetrics.widthPixels.toFloat(), 0f)
+}
+
+fun getFadeInObjectAnimator(view: View): ObjectAnimator {
+    return ObjectAnimator.ofFloat(view, View.ALPHA, 0f, 1f)
 }

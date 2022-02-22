@@ -41,7 +41,7 @@
         app:layout_constraintTop_toBottomOf="@id/image_card_view" />
 
     <TextView
-        android:id="@+id/share_fav_description"
+        android:id="@+id/share_favorite_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -55,7 +55,7 @@
         app:layout_constraintTop_toBottomOf="@id/share_favorite_title" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/share_fav_next"
+        android:id="@+id/share_favorite_next"
         style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

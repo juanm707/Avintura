@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 interface BusinessDetailDao {
 
     @Query("SELECT bd.*, f.favorite, b.name, b.rating, b.imageUrl, b.reviewCount, b.city FROM BusinessDetail bd LEFT JOIN Business b ON b.id = bd.id LEFT JOIN Favorite f ON f.id = b.id WHERE bd.id = :businessId")
-    suspend fun getBusiness(businessId: String): BusinessDetailWithFavoriteStatus
+    suspend fun getBusiness(businessId: String): BusinessDetailWithFavoriteStatus?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(businessDetail: BusinessDetail)

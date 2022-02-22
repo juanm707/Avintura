@@ -140,22 +140,28 @@ class BusinessDetailFragment : Fragment() {
 
     private fun setUpBusinessObserver() {
         businessDetailViewModel.business.observe(viewLifecycleOwner, { business ->
-            setRatingImage(business)
-            setScrollToSectionClickListeners()
-            setPriceAndCategoryAndDistance(business)
-            setCollapsingToolbarData(business)
-            setClaimedStatus(business)
-            setFavoriteMenuItem(business)
-            binding.reviewCount.text = resources.getQuantityString(R.plurals.review_count, business.businessBasic.reviewCount, business.businessBasic.reviewCount)
-            binding.yelpLogo.setOnClickListener {
-                val webpage: Uri = Uri.parse(business.url)
-                val intent = Intent(Intent.ACTION_VIEW, webpage)
-                startActivity(Intent.createChooser(intent, "Open with"))
+            if (business != null) {
+                setRatingImage(business)
+                setScrollToSectionClickListeners()
+                setPriceAndCategoryAndDistance(business)
+                setCollapsingToolbarData(business)
+                setClaimedStatus(business)
+                setFavoriteMenuItem(business)
+                binding.reviewCount.text = resources.getQuantityString(
+                    R.plurals.review_count,
+                    business.businessBasic.reviewCount,
+                    business.businessBasic.reviewCount
+                )
+                binding.yelpLogo.setOnClickListener {
+                    val webpage: Uri = Uri.parse(business.url)
+                    val intent = Intent(Intent.ACTION_VIEW, webpage)
+                    startActivity(Intent.createChooser(intent, "Open with"))
+                }
+                setPhoneData(business)
+                setAddressAndNavigation(business)
+                setUpFavoriteUpdateObserver(business)
+                setUpToolbarMenuItemListener(business)
             }
-            setPhoneData(business)
-            setAddressAndNavigation(business)
-            setUpFavoriteUpdateObserver(business)
-            setUpToolbarMenuItemListener(business)
         })
     }
 

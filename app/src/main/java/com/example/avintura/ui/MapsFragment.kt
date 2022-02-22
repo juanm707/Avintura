@@ -104,7 +104,7 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO when user is prompted first time to enable location by permission, it doesnt update the map to show current location
+        // TODO when user is prompted first time to enable location by permission, it doesnt update the map to show current location if granted
         // however it works when user opens map fragment after the first time.
         requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -232,9 +232,9 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
         for (b in cluster.items) {
             builder.include(b.position)
         }
-        val bounds = builder.build()
 
         return try {
+            val bounds = builder.build()
             val gMap = map
             if (gMap != null) {
                 gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, (16 * (resources.displayMetrics.density)).toInt()))

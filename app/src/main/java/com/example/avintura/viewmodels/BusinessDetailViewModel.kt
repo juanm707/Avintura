@@ -52,12 +52,13 @@ class BusinessDetailViewModel(private val repository: AvinturaRepository, privat
                 Log.d("NetworkError", e.message.toString()) // if request to update data failed, use whats in DB if any
 
                 _business.value = repository.getBusiness(id)
-                _photos.value = repository.getPhotos(id)
-                _hours.value = repository.getHours(id)
-                _reviews.value = repository.getReviews(id)
-
                 if (business.value == null)
                     _connectionStatusError.value = true
+                else {
+                    _photos.value = repository.getPhotos(id)
+                    _hours.value = repository.getHours(id)
+                    _reviews.value = repository.getReviews(id)
+                }
             }
         }
     }

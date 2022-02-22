@@ -46,6 +46,8 @@ class ViewPagerFragment : Fragment() {
 
         val adapter = ViewPagerAdapter(fragmentList, parentFragmentManager, lifecycle)
         viewPager2.adapter = adapter
+        viewPager2.isUserInputEnabled = false
+        viewPager2.offscreenPageLimit = 1
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
         TabLayoutMediator(tabLayout, viewPager2) { tab, position ->

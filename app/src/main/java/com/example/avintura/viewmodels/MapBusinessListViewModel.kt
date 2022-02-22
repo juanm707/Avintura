@@ -1,16 +1,13 @@
 package com.example.avintura.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.*
-import com.example.avintura.database.Favorite
-import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.domain.AvinturaCategoryBusiness
-import com.example.avintura.network.YelpAPINetwork
 import com.example.avintura.repository.AvinturaRepository
 import com.example.avintura.ui.Category
-import com.example.avintura.util.getString
-import com.example.avintura.util.toInt
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MapBusinessListViewModel(private val repository: AvinturaRepository, val category: Category) : ViewModel() {
 
