@@ -85,7 +85,7 @@ class ViewPagerTopRecyclerViewAdapter(
         }
 
         override fun onClick(v: View?) {
-            onBusinessClickListener.onBusinessClick(adapterPosition)
+            onBusinessClickListener.onBusinessClick(bindingAdapterPosition)
         }
     }
 

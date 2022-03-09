@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.avintura.R
+import com.example.avintura.util.getScaleAnimatorSet
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 
@@ -40,13 +41,7 @@ class ThirdScreen : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.1f)
-        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.1f)
-        val animator = ObjectAnimator.ofPropertyValuesHolder(
-            cardView,
-            scaleX,
-            scaleY
-        )
+        val animator = getScaleAnimatorSet(cardView, 1.1f)
         animator.repeatCount = 1
         animator.repeatMode = ObjectAnimator.REVERSE
         animator.start()

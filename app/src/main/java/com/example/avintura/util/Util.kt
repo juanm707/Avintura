@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -298,4 +297,14 @@ private fun getMoveObjectAnimator(resources: Resources, view: View): ObjectAnima
 
 fun getFadeInObjectAnimator(view: View): ObjectAnimator {
     return ObjectAnimator.ofFloat(view, View.ALPHA, 0f, 1f)
+}
+
+fun getScaleAnimatorSet(view: View, vararg values: Float): ValueAnimator {
+    val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, *values)
+    val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, *values)
+    return ObjectAnimator.ofPropertyValuesHolder(
+        view,
+        scaleX,
+        scaleY
+    )
 }
