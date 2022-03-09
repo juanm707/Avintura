@@ -20,7 +20,8 @@ import com.example.avintura.ui.Category
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+const val DEFAULT_SEARCH_LOCATION = "CA, CA 94574"
+const val DEFAULT_SEARCH_RADIUS = 24000
 fun Float.getStarRatingRegularDrawable(context: Context): Drawable? {
     return when (this) {
         1f -> AppCompatResources.getDrawable(context, R.drawable.stars_regular_1)

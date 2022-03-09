@@ -11,9 +11,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
@@ -26,6 +28,9 @@ import com.example.avintura.util.setUIColorByCategory
 import com.example.avintura.viewmodels.CategoryListViewModel
 import com.example.avintura.viewmodels.CategoryListViewModelFactory
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 enum class Category {
@@ -84,27 +89,42 @@ class CategoryFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessC
     }
 
     private fun setUpBusinessesObserver() {
+        val categoryAdapter = CategoryResultListRecyclerViewAdapter(requireContext(), this)
         binding.categoryRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
+            adapter = categoryAdapter
         }
-        categoryListViewModel.businesses.observe(viewLifecycleOwner, { resultList ->
-            if (resultList.isEmpty()) {
-                showMap = false
-                Log.d("Category", "Empty")
-                binding.emptyListText.apply {
-                    visibility = View.VISIBLE
-                    setTextColor(categoryListViewModel.category.getProgressBarColor(requireContext()))
-                }
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            categoryListViewModel.businessesFlow.collectLatest { pagingData ->
+                categoryAdapter.submitData(pagingData)
             }
-            else {
-                showMap = true
+        }
+
+        lifecycleScope.launch {
+            categoryAdapter.loadStateFlow.collect {
+                if (it.refresh is LoadState.NotLoading)
+                    binding.progressCircular.visibility = View.GONE
             }
-            binding.categoryRecyclerView.apply {
-                binding.progressCircular.visibility = View.GONE
-                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(resultList, requireContext(), this@CategoryFragment))
-            }
-        })
+        }
+
+//        categoryListViewModel.businesses.observe(viewLifecycleOwner, { resultList ->
+//            if (resultList.isEmpty()) {
+//                showMap = false
+//                Log.d("Category", "Empty")
+//                binding.emptyListText.apply {
+//                    visibility = View.VISIBLE
+//                    setTextColor(categoryListViewModel.category.getProgressBarColor(requireContext()))
+//                }
+//            }
+//            else {
+//                showMap = true
+//            }
+//            binding.categoryRecyclerView.apply {
+//                binding.progressCircular.visibility = View.GONE
+//                adapter = AlphaInAnimationAdapter(CategoryResultListRecyclerViewAdapter(resultList, requireContext(), this@CategoryFragment))
+//            }
+//        })
     }
 
     private fun setUpToolbar() {

@@ -1,12 +1,19 @@
 package com.example.avintura.repository
 
+import android.util.Log
 import androidx.annotation.WorkerThread
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.avintura.database.*
 import com.example.avintura.database.dao.*
 import com.example.avintura.domain.*
 import com.example.avintura.network.*
 import com.example.avintura.network.YelpAPINetwork.retrofitYelpService
+import com.example.avintura.paging.NETWORK_PAGE_SIZE
+import com.example.avintura.paging.YelpCategoryPagingDataSource
 import com.example.avintura.ui.Category
+import com.example.avintura.util.getString
 import com.example.avintura.util.getThingsToDoCategories
 import kotlinx.coroutines.flow.Flow
 
@@ -61,6 +68,17 @@ class AvinturaRepository(
             categoryTypeDao.delete(categoryType.ordinal)
         businessDao.insertAll(businessesFromNetwork.asDatabaseModel(0))
         categoryTypeDao.insertAll(businessesFromNetwork.asCategoryTypeModel(categoryType.ordinal, offset))
+    }
+
+    fun getCategoryResultStream(category: Category): Flow<PagingData<YelpBusiness>> {
+        Log.d("AvinturaRepository", "AvinturaRepository::getCategoryResultsStream New category: ${category.getString()}")
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { YelpCategoryPagingDataSource(retrofitYelpService, category)}
+        ).flow
     }
 
     suspend fun refreshBusinessDetail(businessId: String) {

@@ -2,14 +2,18 @@ package com.example.avintura.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.*
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.avintura.database.Favorite
 import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.domain.AvinturaCategoryBusiness
 import com.example.avintura.network.YelpAPINetwork
+import com.example.avintura.network.YelpBusiness
 import com.example.avintura.repository.AvinturaRepository
 import com.example.avintura.ui.Category
 import com.example.avintura.util.getString
 import com.example.avintura.util.toInt
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class CategoryListViewModel(private val repository: AvinturaRepository, val category: Category) : ViewModel() {
@@ -20,11 +24,27 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
     private val _businesses = MutableLiveData<List<AvinturaCategoryBusiness>>()
     val businesses: LiveData<List<AvinturaCategoryBusiness>> = _businesses
 
+    private lateinit var _businessesFlow: Flow<PagingData<YelpBusiness>>
+    val businessesFlow: Flow<PagingData<YelpBusiness>>
+        get() = _businessesFlow
+
     init {
-        refreshDataFromNetwork()
+        //refreshDataFromNetworkPaging()
+        getDataFromNetworkPaging()
     }
 
-     fun refreshDataFromNetwork() {
+    private fun getDataFromNetworkPaging() {
+        viewModelScope.launch {
+            try {
+                val b = repository.getCategoryResultStream(category).cachedIn(viewModelScope)
+                _businessesFlow = b
+            } catch (e: Exception) {
+                Log.d("CategoryViewModel", "${e.message}")
+            }
+        }
+    }
+
+    fun refreshDataFromNetwork() {
         viewModelScope.launch {
             try {
                 if (category != Category.Favorite) {
@@ -38,6 +58,7 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
                         category
                     )
                     _connectionStatusError.value = false
+
                 }
                 _businesses.value = repository.getBusinessesByCategory(category)
             }
