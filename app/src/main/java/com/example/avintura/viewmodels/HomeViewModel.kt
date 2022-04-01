@@ -22,12 +22,13 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
     val favoriteCount = repository.getFavoriteCount().asLiveData()
 
     var position: Int = 0
+    var doneLoading = false
 
-//    init {
-//        refreshDataFromNetwork()
-//    }
+    init {
+        refreshDataFromNetwork()
+    }
 
-    fun refreshDataFromNetwork() {
+    private fun refreshDataFromNetwork() {
         viewModelScope.launch {
             try {
                 repository.refreshBusinesses(0)
@@ -40,6 +41,7 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
                 if (businesses.value.isNullOrEmpty())
                     _connectionStatusError.value = true
             }
+            doneLoading = true
         }
     }
 

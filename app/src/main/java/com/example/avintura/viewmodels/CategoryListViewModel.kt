@@ -21,53 +21,57 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
     private val _connectionStatusError = MutableLiveData(false)
     val connectionStatus: LiveData<Boolean> = _connectionStatusError
 
-    private val _businesses = MutableLiveData<List<AvinturaCategoryBusiness>>()
-    val businesses: LiveData<List<AvinturaCategoryBusiness>> = _businesses
+    private val _businessesFavorite = MutableLiveData<List<AvinturaCategoryBusiness>>()
+    val businessesFavorite: LiveData<List<AvinturaCategoryBusiness>> = _businessesFavorite
 
-    private lateinit var _businessesFlow: Flow<PagingData<YelpBusiness>>
-    val businessesFlow: Flow<PagingData<YelpBusiness>>
-        get() = _businessesFlow
+    private lateinit var _businessesPaging: LiveData<PagingData<YelpBusiness>>
+    val businessesPaging: LiveData<PagingData<YelpBusiness>>
+        get() = _businessesPaging
 
     init {
-        //refreshDataFromNetworkPaging()
         getDataFromNetworkPaging()
     }
 
     private fun getDataFromNetworkPaging() {
         viewModelScope.launch {
             try {
-                val b = repository.getCategoryResultStream(category).cachedIn(viewModelScope)
-                _businessesFlow = b
+                _businessesPaging = repository.getCategoryResultStream(category).cachedIn(viewModelScope).asLiveData()
             } catch (e: Exception) {
                 Log.d("CategoryViewModel", "${e.message}")
             }
         }
     }
 
-    fun refreshDataFromNetwork() {
-        viewModelScope.launch {
-            try {
-                if (category != Category.Favorite) {
-                    repository.refreshBusinessesByCategory(
-                        category.getString(),
-                        "CA, CA 94574",
-                        0,
-                        50,
-                        24000,
-                        true,
-                        category
-                    )
-                    _connectionStatusError.value = false
+//    fun refreshDataFromNetwork() {
+//        viewModelScope.launch {
+//            try {
+//                if (category != Category.Favorite) {
+//                    repository.refreshBusinessesByCategory(
+//                        category.getString(),
+//                        "CA, CA 94574",
+//                        0,
+//                        50,
+//                        24000,
+//                        true,
+//                        category
+//                    )
+//                    _connectionStatusError.value = false
+//
+//                }
+//                _businesses.value = repository.getBusinessesByCategory(category)
+//            }
+//            catch (e: Exception) {
+//                Log.d("NetworkError", e.message.toString()) // if request to update data failed, use whats in DB if any
+//                _businesses.value = repository.getBusinessesByCategory(category)
+//                if (businesses.value.isNullOrEmpty())
+//                    _connectionStatusError.value = true
+//            }
+//        }
+//    }
 
-                }
-                _businesses.value = repository.getBusinessesByCategory(category)
-            }
-            catch (e: Exception) {
-                Log.d("NetworkError", e.message.toString()) // if request to update data failed, use whats in DB if any
-                _businesses.value = repository.getBusinessesByCategory(category)
-                if (businesses.value.isNullOrEmpty())
-                    _connectionStatusError.value = true
-            }
+    fun refreshDBData() {
+        viewModelScope.launch {
+            _businessesFavorite.value = repository.getBusinessesByCategory(category)
         }
     }
 

@@ -1,24 +1,16 @@
 package com.example.avintura.ui.adapter
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.avintura.R
-import com.example.avintura.database.BusinessWithFavoriteStatus
 import com.example.avintura.domain.AvinturaBusiness
+import com.example.avintura.network.YelpBusiness
 import com.example.avintura.util.*
 import com.google.android.material.card.MaterialCardView
 

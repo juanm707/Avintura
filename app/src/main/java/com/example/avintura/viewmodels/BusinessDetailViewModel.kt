@@ -37,7 +37,7 @@ class BusinessDetailViewModel(private val repository: AvinturaRepository, privat
     private fun refreshDataFromNetwork() {
         viewModelScope.launch {
             try {
-                repository.refreshBusinessDetail(id) // PUC Cafe "cjtJnwvXzixd4C0PlU6BhQ"
+                repository.refreshBusinessDetail(id)
                 _connectionStatusError.value = false
                 _business.value = repository.getBusiness(id)
                 _photos.value = repository.getPhotos(id)

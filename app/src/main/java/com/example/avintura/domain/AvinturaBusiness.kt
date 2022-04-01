@@ -57,7 +57,7 @@ data class AvinturaHour(
     val overnight: Int?
 )
 
-data class AvinturaCategoryBusiness(
+class AvinturaCategoryBusiness(
     val businessBasic: AvinturaBusiness,
     val city: String,
     val distance: Float?,

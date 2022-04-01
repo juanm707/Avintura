@@ -211,11 +211,16 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
     }
 
     private fun observeBusinesses(googleMap: GoogleMap) {
-        mapBusinessListViewModel.businesses.observe(viewLifecycleOwner, { businesses ->
+        mapBusinessListViewModel.businesses.observe(viewLifecycleOwner) { businesses ->
             // Initialize bounds with current user location
             val builder: LatLngBounds.Builder = LatLngBounds.Builder()
             for (business in businesses) {
-                builder.include(LatLng(business.coordinates.latitude, business.coordinates.longitude))
+                builder.include(
+                    LatLng(
+                        business.coordinates.latitude,
+                        business.coordinates.longitude
+                    )
+                )
                 clusterManager.addItem(business)
             }
             googleMap.moveCamera(
@@ -224,7 +229,7 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
                     (16 * (resources.displayMetrics.density)).toInt()
                 )
             )
-        })
+        }
     }
 
     private fun zoomInCluster(cluster: Cluster<AvinturaCategoryBusiness>): Boolean {

@@ -126,7 +126,7 @@ class BusinessDetailFragment : Fragment() {
 
     private fun setUpPhotoObserver() {
         val photoImageViewList = listOf(binding.image1, binding.image2, binding.image3)
-        businessDetailViewModel.photos.observe(viewLifecycleOwner, { photos ->
+        businessDetailViewModel.photos.observe(viewLifecycleOwner) { photos ->
             for (i in photos.indices) {
                 photoImageViewList[i].load(photos[i].url) {
                     placeholder(R.drawable.ic_baseline_image_24)
@@ -135,11 +135,11 @@ class BusinessDetailFragment : Fragment() {
                     error(R.drawable.ic_baseline_broken_image_24)
                 }
             }
-        })
+        }
     }
 
     private fun setUpBusinessObserver() {
-        businessDetailViewModel.business.observe(viewLifecycleOwner, { business ->
+        businessDetailViewModel.business.observe(viewLifecycleOwner) { business ->
             if (business != null) {
                 setRatingImage(business)
                 setScrollToSectionClickListeners()
@@ -162,7 +162,7 @@ class BusinessDetailFragment : Fragment() {
                 setUpFavoriteUpdateObserver(business)
                 setUpToolbarMenuItemListener(business)
             }
-        })
+        }
     }
 
     private fun setUpToolbarMenuItemListener(business: AvinturaBusinessDetail) {
@@ -191,16 +191,16 @@ class BusinessDetailFragment : Fragment() {
 
     private fun setUpReviewsObserver() {
         binding.reviewCardView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
-        businessDetailViewModel.reviews.observe(viewLifecycleOwner, { reviews ->
+        businessDetailViewModel.reviews.observe(viewLifecycleOwner) { reviews ->
             binding.reviewRecyclerView.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = ReviewRecyclerViewAdapter(reviews, requireContext())
             }
-        })
+        }
     }
 
     private fun setUpHoursObserver() {
-        businessDetailViewModel.hours.observe(viewLifecycleOwner, { hours ->
+        businessDetailViewModel.hours.observe(viewLifecycleOwner) { hours ->
             if (hours.isNotEmpty()) {
                 if (hours[0].isOpenNow) {
                     binding.openOrClosed.apply {
@@ -222,15 +222,16 @@ class BusinessDetailFragment : Fragment() {
                     adapter = HoursRecyclerViewAdapter(hours)
                 }
             }
-        })
+        }
     }
 
     private fun setUpFavoriteUpdateObserver(business: AvinturaBusinessDetail) {
-        businessDetailViewModel.favoriteInsertion.observe(viewLifecycleOwner, {
+        businessDetailViewModel.favoriteInsertion.observe(viewLifecycleOwner) {
             val result = if (it) "successful" else "unsuccessful"
             updateFavoriteStatus(it, business)
-            Toast.makeText(requireContext(), "Favorite update was $result!", Toast.LENGTH_SHORT).show()
-        })
+            Toast.makeText(requireContext(), "Favorite update was $result!", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 
     private fun setCollapsingToolbarData(business: AvinturaBusinessDetail) {

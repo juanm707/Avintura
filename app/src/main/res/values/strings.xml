@@ -135,4 +135,5 @@
     <string name="share_favorite_description">Save your favorite spots and share them or any other place with your friends and family!</string>
     <string name="yelp_description">Avintura gets its results from Yelp, so you know you have the most updated info, such as hours, contact info, location and more. Reviews and ratings are also retrieved from Yelp to help you decide which place to visit, but we encourage everyone to visit everything Wine Country has to offer!</string>
     <string name="finish">Finish</string>
+    <string name="powered_by">POWERED BY</string>
 </resources>

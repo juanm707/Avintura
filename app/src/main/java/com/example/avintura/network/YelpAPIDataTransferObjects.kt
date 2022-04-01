@@ -1,6 +1,8 @@
 package com.example.avintura.network
 
 import com.example.avintura.database.*
+import com.example.avintura.domain.AvinturaBusiness
+import com.example.avintura.domain.AvinturaCategoryBusiness
 import com.example.avintura.util.toInt
 import com.squareup.moshi.Json
 

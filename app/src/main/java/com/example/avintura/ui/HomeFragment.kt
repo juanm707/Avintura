@@ -1,11 +1,13 @@
 package com.example.avintura.ui
 
+import android.animation.*
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.*
 import android.widget.Toast
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
@@ -55,6 +57,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.blue_sapphire)
+        animateCrown()
         setUpNavigation()
         setUpToolbar()
         setBusinessesObserver()
@@ -66,7 +69,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     override fun onResume() {
         super.onResume()
         Log.d("onResumeHome", "ViewPager2 Position: ${homeViewModel.position}")
-        homeViewModel.refreshDataFromNetwork()
+        // homeViewModel.refreshDataFromNetwork()
     }
 
     override fun onDestroyView() {
@@ -102,51 +105,73 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     private fun setBusinessesObserver() {
         binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this, emptyList())
         binding.homeViewPager.registerOnPageChangeCallback(getOnPageChangeCallbackObject())
-        homeViewModel.businesses.observe(viewLifecycleOwner, { businesses ->
-            shrinkProgressCircle(businesses)
-        })
+        homeViewModel.businesses.observe(viewLifecycleOwner) { businesses ->
+            if (!homeViewModel.doneLoading) {
+                shrinkProgressCircle(businesses)
+            }
+            else {
+                hideProgressIndicator()
+                setViewPager(businesses)
+            }
+        }
     }
 
     private fun shrinkProgressCircle(businesses: List<AvinturaBusiness>) {
-        val shrinkAnimator = getScaleAnimatorSet(binding.progressCircular, 0.0f)
+        val shrinkAnimator = getScaleAnimatorSet(binding.progressCircularLottie, 0.0f)
         shrinkAnimator.duration = 500
         shrinkAnimator.doOnEnd {
-            binding.progressCircular.visibility = View.GONE
-            binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this, businesses)
-            binding.homeViewPager.setCurrentItem(homeViewModel.position, false)
+            hideProgressIndicator()
+            setViewPager(businesses)
         }
         shrinkAnimator.start()
     }
 
+    private fun setViewPager(businesses: List<AvinturaBusiness>) {
+        binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this, businesses)
+        binding.homeViewPager.setCurrentItem(homeViewModel.position, false)
+    }
+
+    private fun hideProgressIndicator() {
+        binding.progressCircularLottie.apply {
+            visibility = View.GONE
+            pauseAnimation()
+        }
+    }
+
     private fun setFavoriteCountObserver() {
-        homeViewModel.favoriteCount.observe(viewLifecycleOwner, { count ->
-            binding.favoriteText.text = resources.getQuantityString(R.plurals.favorite_count, count, count)
-        })
+        homeViewModel.favoriteCount.observe(viewLifecycleOwner) { count ->
+            binding.favoriteText.text =
+                resources.getQuantityString(R.plurals.favorite_count, count, count)
+        }
     }
 
     private fun setConnectionStatusObserver() {
-        homeViewModel.connectionStatus.observe(viewLifecycleOwner, {
+        homeViewModel.connectionStatus.observe(viewLifecycleOwner) {
             if (it)
                 Toast.makeText(requireContext(), "BAD CONNECTION", Toast.LENGTH_SHORT).show()
-        })
+        }
     }
 
     private fun setCategoryCardClick() {
         binding.wineryCard.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Winery))
+            navigateToCategory(Category.Winery)
         }
         binding.diningCard.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Dining))
+            navigateToCategory(Category.Dining)
         }
         binding.hotelCard.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.HotelSpa))
+            navigateToCategory(Category.HotelSpa)
         }
         binding.thingsCard.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Activity))
+            navigateToCategory(Category.Activity)
         }
         binding.favoriteCard.setOnClickListener {
-            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(Category.Favorite))
+            navigateToCategory(Category.Favorite)
         }
+    }
+
+    private fun navigateToCategory(category: Category) {
+        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCategoryFragment(category))
     }
 
     private fun getOnPageChangeCallbackObject(): ViewPager2.OnPageChangeCallback {
@@ -160,6 +185,29 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     private fun onBoardingFinished(): Boolean {
         val sharedPref = requireActivity().getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
         return sharedPref.getBoolean("Finished", false)
+    }
+
+    private fun animateCrown() {
+        val animatorSet = AnimatorSet()
+        val rotationAnimatorBackward = ObjectAnimator.ofFloat(binding.crownImage, View.ROTATION, 25f, -15f)
+        rotationAnimatorBackward.duration = 500
+
+        val rotationAnimatorForward = ObjectAnimator.ofFloat(binding.crownImage, View.ROTATION, 0f, 385f)
+        rotationAnimatorForward.duration = 1000
+
+        animatorSet.playSequentially(
+            rotationAnimatorBackward,
+            rotationAnimatorForward
+        )
+        animatorSet.interpolator = OvershootInterpolator()
+        animatorSet.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                super.onAnimationEnd(animation)
+                animatorSet.startDelay = 500
+                animatorSet.start()
+            }
+        })
+        animatorSet.start()
     }
 
     override fun onBusinessClick(position: Int) {
