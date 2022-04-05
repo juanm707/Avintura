@@ -18,6 +18,8 @@ import com.example.avintura.ui.Category
 import com.example.avintura.util.getString
 import com.example.avintura.util.getThingsToDoCategories
 import kotlinx.coroutines.flow.Flow
+import java.util.*
+import kotlin.collections.HashMap
 
 class AvinturaRepository(
     private val businessDao: BusinessDao,
@@ -83,7 +85,7 @@ class AvinturaRepository(
         ).flow
     }
 
-    suspend fun refreshBusinessDetail(businessId: String) {
+    suspend fun refreshBusinessDetail(businessId: String): YelpBusinessDetail {
         val businessFromNetwork = retrofitYelpService.getBusiness(
             id = businessId
         )
@@ -102,6 +104,7 @@ class AvinturaRepository(
                     openDao.insertAll(openDBModel)
             }
         }
+        return businessFromNetwork
     }
 
     suspend fun refreshReviews(businessId: String) {

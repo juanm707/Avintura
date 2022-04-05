@@ -92,4 +92,11 @@ dependencies {
 
     // Lottie animations
     implementation "com.airbnb.android:lottie:5.0.3"
+
+    // WorkManager
+    implementation "androidx.work:work-runtime-ktx:2.7.1"
+
+    // Jsoup
+    implementation "org.jsoup:jsoup:1.14.3"
+
 }
