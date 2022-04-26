@@ -26,8 +26,7 @@ data class Business(
     val city: String,
     val price: String?,
     val distance: Float?,
-    @Embedded val coordinates: Coordinates,
-    val featured: Int
+    @Embedded val coordinates: Coordinates
 )
 
 @Entity
@@ -143,6 +142,18 @@ data class CategoryBusinessWithFavoriteStatus(
     val favorite: Int
 )
 
+@Entity
+data class RemoteKeys(
+    @PrimaryKey val businessId: String,
+    val prevKey: Int?,
+    val nextKey: Int?
+)
+
+@Entity
+data class Featured(
+    @PrimaryKey val businessId: String
+)
+
 /**
  * Map Business in db to domain entities
  */
@@ -218,21 +229,21 @@ fun List<OpenHours>.asHourDomainModel(): List<AvinturaHour> {
 }
 
 fun List<CategoryBusinessWithFavoriteStatus>.asCategoryDomainModel(): List<AvinturaCategoryBusiness> {
-    return map {
+    return map { b ->
         AvinturaCategoryBusiness(
             AvinturaBusiness(
-                it.business.id,
-                it.business.name,
-                it.business.rating,
-                it.business.imageUrl,
-                it.business.reviewCount,
-                it.business.city,
-                it.favorite.toBoolean()
+                b.business.id,
+                b.business.name,
+                b.business.rating,
+                b.business.imageUrl,
+                b.business.reviewCount,
+                b.business.city,
+                b.favorite.toBoolean()
             ),
-            it.business.city,
-            it.business.distance,
-            it.business.price,
-            Coordinates(it.business.coordinates.latitude, it.business.coordinates.longitude)
+            b.business.city,
+            b.business.distance,
+            b.business.price,
+            Coordinates(b.business.coordinates.latitude, b.business.coordinates.longitude)
         )
     }
 }

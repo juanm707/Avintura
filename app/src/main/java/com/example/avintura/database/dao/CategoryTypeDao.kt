@@ -1,6 +1,7 @@
 package com.example.avintura.database.dao
 
 import androidx.lifecycle.LiveData
+import androidx.paging.PagingSource
 import androidx.room.*
 import com.example.avintura.database.Business
 import com.example.avintura.database.CategoryBusinessWithFavoriteStatus
@@ -11,8 +12,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryTypeDao {
-    @Query("SELECT b.*, f.favorite FROM CategoryType ct LEFT JOIN Business b ON ct.businessId = b.id LEFT JOIN Favorite f ON f.id = b.id WHERE ct.type = :category ORDER BY ct.rank")
-    suspend fun getBusinesses(category: Int) : List<CategoryBusinessWithFavoriteStatus>
+    // Used with remote mediator
+    //@Query("SELECT b.*, f.favorite, ct.rank FROM CategoryType ct LEFT JOIN Business b ON ct.businessId = b.id LEFT JOIN Favorite f ON f.id = b.id WHERE ct.type = :category")
+    //fun getBusinesses(category: Int) : PagingSource<Int, CategoryBusinessWithFavoriteStatus>
+
+    @Query("SELECT b.*, f.favorite, ct.rank FROM CategoryType ct LEFT JOIN Business b ON ct.businessId = b.id LEFT JOIN Favorite f ON f.id = b.id WHERE ct.type = :category ORDER BY ct.rank")
+    suspend fun getCachedBusinesses(category: Int) : List<CategoryBusinessWithFavoriteStatus>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(categoryType: List<CategoryType>)

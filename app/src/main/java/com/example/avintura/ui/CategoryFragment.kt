@@ -15,9 +15,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.paging.LoadState
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
+import com.example.avintura.database.asCategoryDomainModel
 import com.example.avintura.databinding.FragmentCategoryBinding
 import com.example.avintura.network.YelpBusiness
 import com.example.avintura.ui.adapter.CategoryFavoriteListRecyclerViewAdapter
@@ -30,6 +32,7 @@ import com.example.avintura.viewmodels.CategoryListViewModel
 import com.example.avintura.viewmodels.CategoryListViewModelFactory
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -65,9 +68,9 @@ class CategoryFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpNavigation()
-        // if picked favorites, just get from DB, else page network TODO: remote mediator
+        // if picked favorites, just get from DB, else page network
         if (categoryListViewModel.category == Category.Favorite)
-            setUpFavoritesObserver()
+            setUpCacheObserver()
         else
             setUpBusinessesObserver()
         setUpToolbar()
@@ -101,11 +104,6 @@ class CategoryFragment : Fragment(),
             setHasFixedSize(true)
             adapter = categoryAdapter
         }
-//        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-//            categoryListViewModel.businessesFlow.collectLatest { pagingData ->
-//                categoryAdapter.submitData(pagingData)
-//            }
-//        }
 
         // repo uses flow, ui + view model uses live data
         viewLifecycleOwner.lifecycleScope.launch {
@@ -115,19 +113,36 @@ class CategoryFragment : Fragment(),
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            categoryAdapter.loadStateFlow.collect {
-                if (it.refresh is LoadState.NotLoading)
+            categoryAdapter.loadStateFlow.collect { loadState ->
+                if (loadState.refresh is LoadState.NotLoading)
                     binding.progressCircular.visibility = View.GONE
+
+                if (loadState.append is LoadState.Loading || loadState.source.append is LoadState.Loading) {
+                    // add to cache/room db
+                    categoryListViewModel.refreshDataFromNetwork()
+                }
+
+                // Toast any error, regardless of whether it came from RemoteMediator or Paging Source
+                val errorState = loadState.source.append as? LoadState.Error
+                    ?: loadState.source.prepend as? LoadState.Error
+                    ?: loadState.append as? LoadState.Error
+                    ?: loadState.prepend as? LoadState.Error
+                    ?: loadState.refresh as? LoadState.Error
+                errorState?.let {
+                    Toast.makeText(requireContext(), "Wooops, using cached results ${it.error}", Toast.LENGTH_LONG).show()
+                    binding.progressCircular.visibility = View.GONE
+                    setUpCacheObserver()
+                }
             }
         }
     }
 
-    private fun setUpFavoritesObserver() {
+    private fun setUpCacheObserver() {
         binding.categoryRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
         }
-        categoryListViewModel.businessesFavorite.observe(viewLifecycleOwner) { resultList ->
+        categoryListViewModel.businesses.observe(viewLifecycleOwner) { resultList ->
             if (resultList.isEmpty()) {
                 showMap = false
                 Log.d("Category", "Empty")
@@ -149,6 +164,8 @@ class CategoryFragment : Fragment(),
                 )
             }
         }
+
+        categoryListViewModel.getCachedData()
     }
 
     private fun setUpToolbar() {

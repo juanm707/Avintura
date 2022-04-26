@@ -1,27 +1,23 @@
 package com.example.avintura.repository
 
 import android.util.Log
-import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import androidx.paging.liveData
 import com.example.avintura.database.*
 import com.example.avintura.database.dao.*
 import com.example.avintura.domain.*
 import com.example.avintura.network.*
 import com.example.avintura.network.YelpAPINetwork.retrofitYelpService
-import com.example.avintura.paging.NETWORK_PAGE_SIZE
+import com.example.avintura.paging.YELP_NETWORK_PAGE_SIZE
 import com.example.avintura.paging.YelpCategoryPagingDataSource
 import com.example.avintura.ui.Category
 import com.example.avintura.util.getString
 import com.example.avintura.util.getThingsToDoCategories
 import kotlinx.coroutines.flow.Flow
-import java.util.*
-import kotlin.collections.HashMap
 
 class AvinturaRepository(
+    private val database: AvinturaDatabase,
     private val businessDao: BusinessDao,
     private val favoriteDao: FavoriteDao,
     private val businessDetailDao: BusinessDetailDao,
@@ -29,6 +25,7 @@ class AvinturaRepository(
     private val reviewDao: ReviewDao,
     private val hourDao: HourDao,
     private val openDao: OpenDao,
+    private val featuredDao: FeaturedDao,
     private val categoryTypeDao: CategoryTypeDao
 ) {
     // Room executes all queries on a separate thread.
@@ -37,6 +34,8 @@ class AvinturaRepository(
     // By default Room runs suspend queries off the main thread, therefore, we don't need to
     // implement anything else to ensure we're not doing long running database work
     // off the main thread.
+    val featuredBusinesses: Flow<List<BusinessWithFavoriteStatus>> = featuredDao.getFeaturedBusinesses()
+
     suspend fun refreshBusinesses(offsetFromViewModel: Int) {
         val businessesFromNetwork = retrofitYelpService.searchBusinesses(
             searchTerm = null,
@@ -46,8 +45,9 @@ class AvinturaRepository(
             categories = null
         )
         if (businessesFromNetwork.businesses.isNotEmpty())
-            businessDao.deleteFeatured()
-        businessDao.insertAll(businessesFromNetwork.asDatabaseModel(1))
+            featuredDao.deleteAll()
+        businessDao.insertAll(businessesFromNetwork.asDatabaseModel())
+        featuredDao.insertAll(businessesFromNetwork.asFeaturedDatabaseModel())
     }
 
     suspend fun refreshBusinessesByCategory(
@@ -70,20 +70,24 @@ class AvinturaRepository(
         )
         if (businessesFromNetwork.businesses.isNotEmpty() && deleteCategoryType)
             categoryTypeDao.delete(categoryType.ordinal)
-        businessDao.insertAll(businessesFromNetwork.asDatabaseModel(0))
+        businessDao.insertAll(businessesFromNetwork.asDatabaseModel())
         categoryTypeDao.insertAll(businessesFromNetwork.asCategoryTypeModel(categoryType.ordinal, offset))
     }
 
+    // @OptIn(ExperimentalPagingApi::class)
     fun getCategoryResultStream(category: Category): Flow<PagingData<YelpBusiness>> {
         Log.d("AvinturaRepository", "AvinturaRepository::getCategoryResultsStream New category: ${category.getString()}")
+        // val pagingSourceFactory = { database.categoryTypeDao().getBusinesses(category.ordinal)}
         return Pager(
             config = PagingConfig(
-                pageSize = NETWORK_PAGE_SIZE,
-                enablePlaceholders = false
+                pageSize = YELP_NETWORK_PAGE_SIZE,
+                enablePlaceholders = false,
+                prefetchDistance = 10
             ),
             pagingSourceFactory = { YelpCategoryPagingDataSource(retrofitYelpService, category)}
         ).flow
     }
+    // TODO pass in database? so store in paging source?
 
     suspend fun refreshBusinessDetail(businessId: String): YelpBusinessDetail {
         val businessFromNetwork = retrofitYelpService.getBusiness(
@@ -112,15 +116,11 @@ class AvinturaRepository(
         reviewDao.insertAll(reviewsFromNetwork.asReviewDatabaseModel(businessId))
     }
 
-    suspend fun getBusinesses(): List<AvinturaBusiness> {
-        return businessDao.getBusinesses().asDomainModel()
-    }
-
     suspend fun getBusinessesByCategory(categoryType: Category): List<AvinturaCategoryBusiness> {
         return if (categoryType == Category.Favorite)
             favoriteDao.getFavorites().asCategoryDomainModel()
         else
-            categoryTypeDao.getBusinesses(categoryType.ordinal).asCategoryDomainModel()
+            categoryTypeDao.getCachedBusinesses(categoryType.ordinal).asCategoryDomainModel()
     }
 
     suspend fun getBusiness(businessId: String): AvinturaBusinessDetail? {

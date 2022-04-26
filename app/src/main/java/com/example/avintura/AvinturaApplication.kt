@@ -5,8 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.example.avintura.database.AvinturaDatabase
 import com.example.avintura.repository.AvinturaRepository
@@ -23,6 +21,7 @@ class AvinturaApplication : Application() {
     // rather than when the application starts
     val database by lazy { AvinturaDatabase.getDatabase(this, applicationScope) }
     val repository by lazy { AvinturaRepository(
+        database,
         database.businessDao(),
         database.favoriteDao(),
         database.businessDetailDao(),
@@ -30,6 +29,7 @@ class AvinturaApplication : Application() {
         database.reviewDao(),
         database.hourDao(),
         database.openDao(),
+        database.featuredDao(),
         database.categoryTypeDao()
     )}
 

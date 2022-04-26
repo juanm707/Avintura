@@ -13,6 +13,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -25,6 +26,7 @@ import com.example.avintura.ui.adapter.ViewPagerTopRecyclerViewAdapter
 import com.example.avintura.util.getScaleAnimatorSet
 import com.example.avintura.viewmodels.HomeViewModel
 import com.example.avintura.viewmodels.HomeViewModelFactory
+import kotlinx.coroutines.flow.collect
 
 class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener {
 
@@ -69,7 +71,6 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     override fun onResume() {
         super.onResume()
         Log.d("onResumeHome", "ViewPager2 Position: ${homeViewModel.position}")
-        // homeViewModel.refreshDataFromNetwork()
     }
 
     override fun onDestroyView() {
@@ -106,12 +107,13 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this, emptyList())
         binding.homeViewPager.registerOnPageChangeCallback(getOnPageChangeCallbackObject())
         homeViewModel.businesses.observe(viewLifecycleOwner) { businesses ->
-            if (!homeViewModel.doneLoading) {
-                shrinkProgressCircle(businesses)
-            }
-            else {
-                hideProgressIndicator()
-                setViewPager(businesses)
+            if (businesses.isNotEmpty()) {
+                if (!homeViewModel.doneLoading) {
+                    shrinkProgressCircle(businesses)
+                } else {
+                    hideProgressIndicator()
+                    setViewPager(businesses)
+                }
             }
         }
     }
@@ -128,7 +130,8 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
 
     private fun setViewPager(businesses: List<AvinturaBusiness>) {
         binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this, businesses)
-        binding.homeViewPager.setCurrentItem(homeViewModel.position, false)
+        if (homeViewModel.doneLoading)
+            binding.homeViewPager.setCurrentItem(homeViewModel.position, false)
     }
 
     private fun hideProgressIndicator() {
@@ -146,9 +149,11 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     }
 
     private fun setConnectionStatusObserver() {
-        homeViewModel.connectionStatus.observe(viewLifecycleOwner) {
-            if (it)
-                Toast.makeText(requireContext(), "BAD CONNECTION", Toast.LENGTH_SHORT).show()
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            homeViewModel.connectionStatus.collect {
+                if (it.isNotBlank() || it.isNotEmpty())
+                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

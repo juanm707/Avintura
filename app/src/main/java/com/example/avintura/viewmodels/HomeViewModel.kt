@@ -4,20 +4,24 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.avintura.database.BusinessWithFavoriteStatus
 import com.example.avintura.database.Favorite
+import com.example.avintura.database.asDomainModel
 import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.network.YelpAPINetwork
 import com.example.avintura.network.YelpBusinessContainer
 import com.example.avintura.repository.AvinturaRepository
 import com.example.avintura.util.toInt
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
-    private val _connectionStatusError = MutableLiveData(false)
-    val connectionStatus: LiveData<Boolean> = _connectionStatusError
+    private val _connectionStatusError = MutableSharedFlow<String>()
+    val connectionStatus = _connectionStatusError.asSharedFlow()
 
     // TOP RESULTS
-    private val _businesses = MutableLiveData<List<AvinturaBusiness>>()
-    val businesses: LiveData<List<AvinturaBusiness>> = _businesses
+    val businesses: LiveData<List<AvinturaBusiness>> = repository.featuredBusinesses.asLiveData().map { list ->
+        list.asDomainModel()
+    }
 
     val favoriteCount = repository.getFavoriteCount().asLiveData()
 
@@ -32,14 +36,11 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 repository.refreshBusinesses(0)
-                _connectionStatusError.value = false
-                _businesses.value = repository.getBusinesses()
+                _connectionStatusError.emit("")
             }
             catch (e: Exception) {
-                Log.d("NetworkError", e.message.toString()) // if request to update data failed, use whats in DB if any
-                _businesses.value = repository.getBusinesses()
-                if (businesses.value.isNullOrEmpty())
-                    _connectionStatusError.value = true
+                Log.d("NetworkError", e.message.toString())
+                _connectionStatusError.emit(e.message.toString())
             }
             doneLoading = true
         }

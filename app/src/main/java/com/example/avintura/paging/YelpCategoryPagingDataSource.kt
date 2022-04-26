@@ -13,7 +13,7 @@ import com.example.avintura.util.getThingsToDoCategories
 import retrofit2.HttpException
 import java.io.IOException
 
-const val NETWORK_PAGE_SIZE = 10
+const val YELP_NETWORK_PAGE_SIZE = 10
 
 class YelpCategoryPagingDataSource(private val yelpApiService: YelpApiService, private val category: Category) : PagingSource<Int, YelpBusiness>() {
     override fun getRefreshKey(state: PagingState<Int, YelpBusiness>): Int? {

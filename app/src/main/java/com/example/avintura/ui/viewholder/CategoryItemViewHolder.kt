@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.avintura.R
+import com.example.avintura.database.CategoryBusinessWithFavoriteStatus
 import com.example.avintura.domain.AvinturaCategoryBusiness
 import com.example.avintura.network.YelpBusiness
 import com.example.avintura.ui.adapter.CategoryFavoriteListRecyclerViewAdapter
@@ -24,22 +25,20 @@ class CategoryItemViewHolder(itemView: View, private val onBusinessClickListener
     val city: TextView = itemView.findViewById(R.id.business_city)
     val priceAndMiles: TextView = itemView.findViewById(R.id.price_and_miles)
 
-    fun bind(business: YelpBusiness?, context: Context) {
-        if (business != null) {
-            itemView.setOnClickListener {
-                onBusinessClickListener.onBusinessClick(business.id, business.name)
-            }
-            bindViews(
-               business.name,
-               business.imageUrl,
-               business.price,
-               business.distance,
-               business.rating,
-               business.reviewCount,
-               business.location.city,
-               context
-           )
+    fun bind(business: YelpBusiness, context: Context) {
+        itemView.setOnClickListener {
+            onBusinessClickListener.onBusinessClick(business.id, business.name)
         }
+        bindViews(
+            business.name,
+            business.imageUrl,
+            business.price,
+            business.distance,
+            business.rating,
+            business.reviewCount,
+            business.location.city,
+            context
+        )
     }
 
     fun bind(business: AvinturaCategoryBusiness, context: Context) {
@@ -53,13 +52,22 @@ class CategoryItemViewHolder(itemView: View, private val onBusinessClickListener
             business.distance,
             business.businessBasic.rating,
             business.businessBasic.reviewCount,
-            business.city,
+            business.businessBasic.city,
             context
         )
     }
 
-    private fun bindViews(bName: String, bImageUrl: String, bPrice: String?, bDistance: Float?, bRating: Float, bReviewCount: Int, bCity: String, context: Context) {
-        name.text = "${bindingAdapterPosition + 1}. ${bName}"
+    private fun bindViews(
+        bName: String,
+        bImageUrl: String,
+        bPrice: String?,
+        bDistance: Float?,
+        bRating: Float,
+        bReviewCount: Int,
+        bCity: String,
+        context: Context
+    ) {
+        name.text = "${absoluteAdapterPosition + 1}. ${bName}"
         picture.load(bImageUrl) {
             crossfade(true)
             crossfade(500)

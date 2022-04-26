@@ -109,7 +109,7 @@ data class YelpUser(
 /**
  * Convert Network results to database objects
  */
-fun YelpBusinessContainer.asDatabaseModel(featured: Int): List<Business> {
+fun YelpBusinessContainer.asDatabaseModel(): List<Business> {
     return businesses.map {
         Business(
             it.id,
@@ -123,8 +123,7 @@ fun YelpBusinessContainer.asDatabaseModel(featured: Int): List<Business> {
             Coordinates(
                 it.coordinates.latitude,
                 it.coordinates.longitude
-            ),
-            featured
+            )
         )
     }
 }
@@ -137,6 +136,12 @@ fun YelpBusinessContainer.asCategoryTypeModel(categoryType: Int, offset: Int): L
             categoryType,
             index + start
         )
+    }
+}
+
+fun YelpBusinessContainer.asFeaturedDatabaseModel(): List<Featured> {
+    return businesses.map {
+        Featured(it.id)
     }
 }
 

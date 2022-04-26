@@ -9,8 +9,8 @@ import com.example.avintura.ui.viewholder.CategoryItemViewHolder
 
 
 class CategoryResultListRecyclerViewAdapter(
-                                            private val context: Context,
-                                            private val onBusinessClickListener: CategoryFavoriteListRecyclerViewAdapter.OnBusinessClickListener
+    private val context: Context,
+    private val onBusinessClickListener: CategoryFavoriteListRecyclerViewAdapter.OnBusinessClickListener
 ) : PagingDataAdapter<YelpBusiness, CategoryItemViewHolder>(YelpBusinessComparator) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryItemViewHolder {
@@ -25,10 +25,12 @@ class CategoryResultListRecyclerViewAdapter(
     }
 
     object YelpBusinessComparator : DiffUtil.ItemCallback<YelpBusiness>() {
-        override fun areItemsTheSame(oldItem: YelpBusiness, newItem: YelpBusiness) =
-            oldItem.id == newItem.id
+        override fun areItemsTheSame(oldItem: YelpBusiness, newItem: YelpBusiness): Boolean {
+            return oldItem.id == newItem.id
+        }
 
-        override fun areContentsTheSame(oldItem: YelpBusiness, newItem: YelpBusiness) =
-            oldItem == newItem
+        override fun areContentsTheSame(oldItem: YelpBusiness, newItem: YelpBusiness): Boolean {
+            return oldItem == newItem
+        }
     }
 }

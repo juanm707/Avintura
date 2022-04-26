@@ -15,7 +15,9 @@ import kotlinx.coroutines.CoroutineScope
     Review::class,
     Hour::class,
     Open::class,
-    CategoryType::class], version = 1, exportSchema = false)
+    CategoryType::class,
+    Featured::class,
+    RemoteKeys::class], version = 1, exportSchema = false)
 abstract class AvinturaDatabase : RoomDatabase() {
 
     abstract fun businessDao(): BusinessDao
@@ -26,6 +28,8 @@ abstract class AvinturaDatabase : RoomDatabase() {
     abstract fun hourDao(): HourDao
     abstract fun openDao(): OpenDao
     abstract fun categoryTypeDao(): CategoryTypeDao
+    abstract fun featuredDao(): FeaturedDao
+    abstract fun remoteKeysDao(): RemoteKeysDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the

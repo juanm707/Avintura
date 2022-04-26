@@ -24,7 +24,7 @@ class MapBusinessListViewModel(private val repository: AvinturaRepository, val c
     private fun refreshDataFromLocalStorage() {
         viewModelScope.launch {
             try {
-                _businesses.value = repository.getBusinessesByCategory(category)
+                //_businesses.value = repository.getBusinessesByCategory(category)
             }
             catch (e: Exception) {
                 if (businesses.value.isNullOrEmpty())
