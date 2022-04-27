@@ -53,7 +53,6 @@ class ViewPagerTopRecyclerViewAdapter(
         holder.favoriteIcon.setFavoriteDrawable(context, business.favorite, true)
         holder.favoriteIcon.setOnClickListener {
             holder.favoriteIcon.setFavoriteDrawable(context, business.favorite, false)
-            business.favorite = !business.favorite
             holder.favoriteIcon.scaleHeart()
             onBusinessClickListener.onFavoriteClick(position)
         }

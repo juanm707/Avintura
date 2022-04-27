@@ -63,12 +63,6 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
         }
     }
 
-    fun refreshDBData() {
-        viewModelScope.launch {
-            _businesses.value = repository.getBusinessesByCategory(category)
-        }
-    }
-
     fun getCachedData() {
         viewModelScope.launch {
             _businesses.value = repository.getBusinessesByCategory(category)

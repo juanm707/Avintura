@@ -11,6 +11,8 @@ import com.example.avintura.repository.AvinturaRepository
 import com.example.avintura.util.toInt
 import kotlinx.coroutines.launch
 
+
+// TODO check if business basic in table if yes cool if not then load from network
 class BusinessDetailViewModel(private val repository: AvinturaRepository, private val id: String) : ViewModel() {
     private val _connectionStatusError = MutableLiveData(false)
     val connectionStatus: LiveData<Boolean> = _connectionStatusError

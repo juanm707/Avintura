@@ -50,7 +50,7 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
         if (businesses.value != null) {
             val business = businesses.value!![position]
             viewModelScope.launch {
-                val favorite = Favorite(business.id, business.favorite.toInt())
+                val favorite = Favorite(business.id, (!business.favorite).toInt())
                 repository.insert(favorite)
             }
         }

@@ -45,8 +45,6 @@ class CategoryFragment : Fragment(),
     private lateinit var categoryListViewModel: CategoryListViewModel
     private lateinit var categoryListViewModelFactory: CategoryListViewModelFactory
 
-    private var showMap = false
-
     private var _binding: FragmentCategoryBinding? = null
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -83,7 +81,7 @@ class CategoryFragment : Fragment(),
         super.onResume()
         // TODO change to flow
         if (categoryListViewModel.category == Category.Favorite)
-            categoryListViewModel.refreshDBData()
+            categoryListViewModel.getCachedData()
     }
 
     override fun onDestroyView() {
@@ -144,14 +142,11 @@ class CategoryFragment : Fragment(),
         }
         categoryListViewModel.businesses.observe(viewLifecycleOwner) { resultList ->
             if (resultList.isEmpty()) {
-                showMap = false
                 Log.d("Category", "Empty")
                 binding.emptyListText.apply {
                     visibility = View.VISIBLE
                     setTextColor(categoryListViewModel.category.getProgressBarColor(requireContext()))
                 }
-            } else {
-                showMap = true
             }
             binding.categoryRecyclerView.apply {
                 binding.progressCircular.visibility = View.GONE
@@ -173,16 +168,11 @@ class CategoryFragment : Fragment(),
         binding.categoryToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_map -> {
-                    if (!showMap) {
-                        Toast.makeText(requireContext(), "No locations available to display.", Toast.LENGTH_SHORT).show()
-                        true
-                    } else {
-                        val action = CategoryFragmentDirections.actionCategoryFragmentToMapsFragment(
-                            categoryListViewModel.category
-                        )
-                        findNavController().navigate(action)
-                        true
-                    }
+                    val action = CategoryFragmentDirections.actionCategoryFragmentToMapsFragment(
+                        categoryListViewModel.category
+                    )
+                    findNavController().navigate(action)
+                    true
                 }
                 else -> super.onOptionsItemSelected(item)
             }
