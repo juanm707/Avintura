@@ -27,7 +27,7 @@ class CategoryItemViewHolder(itemView: View, private val onBusinessClickListener
 
     fun bind(business: YelpBusiness, context: Context) {
         itemView.setOnClickListener {
-            onBusinessClickListener.onBusinessClick(business.id, business.name)
+            onBusinessClickListener.onBusinessClick(business.id, business.name, absoluteAdapterPosition)
         }
         bindViews(
             business.name,
@@ -43,7 +43,7 @@ class CategoryItemViewHolder(itemView: View, private val onBusinessClickListener
 
     fun bind(business: AvinturaCategoryBusiness, context: Context) {
         itemView.setOnClickListener {
-            onBusinessClickListener.onBusinessClick(business.businessBasic.id, business.businessBasic.name)
+            onBusinessClickListener.onBusinessClick(business.businessBasic.id, business.businessBasic.name, absoluteAdapterPosition)
         }
         bindViews(
             business.businessBasic.name,

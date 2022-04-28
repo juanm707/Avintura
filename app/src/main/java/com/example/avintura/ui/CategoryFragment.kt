@@ -34,6 +34,7 @@ import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 
 
 enum class Category {
@@ -157,13 +158,16 @@ class CategoryFragment : Fragment(),
                         this@CategoryFragment
                     )
                 )
+                scrollToPosition(categoryListViewModel.lastClickedRecyclerViewPosition)
             }
         }
-
         categoryListViewModel.getCachedData()
     }
 
     private fun setUpToolbar() {
+        categoryListViewModel.connectionStatus.observe(viewLifecycleOwner) { error ->
+            binding.categoryToolbar.menu.findItem(R.id.action_map).isEnabled = !error
+        }
         binding.categoryToolbar.inflateMenu(R.menu.menu_category)
         binding.categoryToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -197,28 +201,13 @@ class CategoryFragment : Fragment(),
         )
     }
 
-    // TODO fix on business click for paging items
-    override fun onBusinessClick(id: String, name: String) {
+    override fun onBusinessClick(id: String, name: String, position: Int) {
+        categoryListViewModel.lastClickedRecyclerViewPosition = position
         val action = CategoryFragmentDirections.actionCategoryFragmentToBusinessDetailFragment(
             id,
             name)
         findNavController().navigate(action)
     }
-
-    // Zqx4mHjH6bg0L1yDrSbzkQ
-
-//    override fun onBusinessClick(position: String) {
-//        if (categoryListViewModel.category == Category.Favorite) {
-//            if (categoryListViewModel.businessesFavorite.value != null) {
-//                val action = CategoryFragmentDirections.actionCategoryFragmentToBusinessDetailFragment(
-//                    categoryListViewModel.businessesFavorite.value!![position].businessBasic.id,
-//                    categoryListViewModel.businessesFavorite.value!![position].businessBasic.name)
-//                findNavController().navigate(action)
-//            }
-//        } else {
-//
-//        }
-//    }
 
 //    override fun onFavoriteClick(position: Int) {
 //        Toast.makeText(requireContext(), "Favorited $position", Toast.LENGTH_SHORT).show()

@@ -25,7 +25,7 @@ class CategoryFavoriteListRecyclerViewAdapter(
     }
 
     interface OnBusinessClickListener {
-        fun onBusinessClick(id: String, name: String)
+        fun onBusinessClick(id: String, name: String, position: Int)
         //fun onFavoriteClick(position: Int)
     }
 }

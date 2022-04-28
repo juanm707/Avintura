@@ -35,6 +35,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 
@@ -213,23 +214,40 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
     private fun observeBusinesses(googleMap: GoogleMap) {
         mapBusinessListViewModel.businesses.observe(viewLifecycleOwner) { businesses ->
             // Initialize bounds with current user location
-            val builder: LatLngBounds.Builder = LatLngBounds.Builder()
-            for (business in businesses) {
-                builder.include(
-                    LatLng(
-                        business.coordinates.latitude,
-                        business.coordinates.longitude
+            if (businesses.isEmpty())
+                showErrorDialog()
+            else {
+                val builder: LatLngBounds.Builder = LatLngBounds.Builder()
+                for (business in businesses) {
+                    builder.include(
+                        LatLng(
+                            business.coordinates.latitude,
+                            business.coordinates.longitude
+                        )
+                    )
+                    clusterManager.addItem(business)
+                }
+                googleMap.moveCamera(
+                    CameraUpdateFactory.newLatLngBounds(
+                        builder.build(),
+                        (16 * (resources.displayMetrics.density)).toInt()
                     )
                 )
-                clusterManager.addItem(business)
             }
-            googleMap.moveCamera(
-                CameraUpdateFactory.newLatLngBounds(
-                    builder.build(),
-                    (16 * (resources.displayMetrics.density)).toInt()
-                )
-            )
         }
+    }
+
+    private fun showErrorDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage("No businesses to display.")
+            .setPositiveButton("Ok") { dialog, which ->
+                // Respond to positive button press
+                findNavController().navigateUp()
+            }
+            .setOnDismissListener {
+                findNavController().navigateUp()
+            }
+            .show()
     }
 
     private fun zoomInCluster(cluster: Cluster<AvinturaCategoryBusiness>): Boolean {
