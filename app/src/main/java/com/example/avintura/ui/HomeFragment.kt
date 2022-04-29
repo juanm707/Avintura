@@ -27,6 +27,7 @@ import com.example.avintura.util.getScaleAnimatorSet
 import com.example.avintura.viewmodels.HomeViewModel
 import com.example.avintura.viewmodels.HomeViewModelFactory
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener {
 
@@ -91,6 +92,8 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     }
 
     private fun setUpToolbar() {
+        // TODO profile fragment
+        // TODO search view
         binding.homeToolbar.title = getString(R.string.app_name)
         binding.homeToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -150,7 +153,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
 
     private fun setConnectionStatusObserver() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            homeViewModel.connectionStatus.collect {
+            homeViewModel.connectionStatus.collectLatest {
                 if (it.isNotBlank() || it.isNotEmpty())
                     Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }

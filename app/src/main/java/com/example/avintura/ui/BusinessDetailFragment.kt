@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.request.ImageRequest
 import com.example.avintura.AvinturaApplication
+import com.example.avintura.BuildConfig
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentBusinessDetailBinding
 import com.example.avintura.domain.AvinturaBusinessDetail
@@ -45,6 +46,7 @@ import com.example.avintura.viewmodels.BusinessDetailViewModel
 import com.example.avintura.viewmodels.BusinessDetailViewModelFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 private const val STREET_ADDRESS_INDEX = 0
 private const val CITY_ADDRESS_INDEX = 1
@@ -335,26 +337,71 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setAddressAndNavigation(business: AvinturaBusinessDetail) {
+        // Todo maybe if just city address ex Windsor, CA 12345 then no map or navigation since no physical address
         if (business.displayAddress != null) {
             val parsedAddress = business.displayAddress.split("|") // should split into two, street and city
-            binding.basicAddressText.text = parsedAddress[STREET_ADDRESS_INDEX]
-            binding.cityAddressText.text = parsedAddress[CITY_ADDRESS_INDEX]
+            if (parsedAddress.isNotEmpty()) {
+                val encodedAddress = setAndReturnMapAddress(parsedAddress).joinToString("+")
 
-            binding.navigationButton.setOnClickListener {
-                val addressStringList = parsedAddress[STREET_ADDRESS_INDEX].split(' ').toMutableList()
-                addressStringList.addAll(parsedAddress[CITY_ADDRESS_INDEX].split(' '))
+                binding.navigationButton.setOnClickListener {
+                    callNavigationIntent(encodedAddress)
+                }
 
-                val gmmIntentUri = Uri.parse("google.navigation:q=${addressStringList.joinToString("+")}")
-                val intent = Intent(Intent.ACTION_VIEW, gmmIntentUri )
-                val chooser = Intent.createChooser(intent, null)
-                try {
-                    startActivity(chooser)
-                } catch (e: ActivityNotFoundException) {
-
+                binding.staticMapImage.load(getStaticMapUrl(encodedAddress, business)) {
+                    listener(
+                        onError = { request: ImageRequest, throwable: Throwable ->
+                            binding.staticMapImageCardView.visibility = View.GONE
+                        },
+                        onSuccess = { _, _ ->
+                            binding.staticMapImageCardView.setOnClickListener {
+                                callNavigationIntent(encodedAddress)
+                            }
+                        }
+                    )
                 }
             }
+        } else
+            binding.staticMapImageCardView.visibility = View.GONE
+    }
+
+    private fun getStaticMapUrl(address: String, business: AvinturaBusinessDetail): String {
+        val zoom = 16
+        val size = "640x600"
+        val scale = 2
+        val color = "red"
+        val label = business.businessBasic.name.first().uppercaseChar()
+        return "https://maps.googleapis.com/maps/api/staticmap?center=$address&zoom=$zoom&size=$size&scale=$scale&markers=color:$color|label:$label|$address&key=${BuildConfig.MAPS_API_KEY}"
+    }
+
+    private fun setAndReturnMapAddress(parsedAddress: List<String>): List<String> {
+        return if (parsedAddress.size == 1) {
+            binding.basicAddressText.text = parsedAddress[0]
+            parsedAddress[0].split(' ')
+        } else {
+            binding.basicAddressText.text = parsedAddress[STREET_ADDRESS_INDEX]
+            binding.cityAddressText.text = parsedAddress[CITY_ADDRESS_INDEX]
+            val addressStringList = parsedAddress[STREET_ADDRESS_INDEX].split(' ').toMutableList()
+            addressStringList.addAll(parsedAddress[CITY_ADDRESS_INDEX].split(' '))
+            addressStringList
         }
     }
+
+    private fun callNavigationIntent(encodedAddress: String) {
+        val gmmIntentUri = Uri.parse("google.navigation:q=$encodedAddress")
+        val intent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        val chooser = Intent.createChooser(intent, null)
+        try {
+            startActivity(chooser)
+        } catch (e: ActivityNotFoundException) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setMessage("Could not show navigation.")
+                .setPositiveButton("Ok") { dialog, which ->
+                    // Respond to positive button press
+                }
+                .show()
+        }
+    }
+
 
     private fun setClaimedStatus(business: AvinturaBusinessDetail) {
         if (business.isClaimed != null) {
@@ -487,6 +534,7 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setNavigationButtonColor(colorIcon: Int, colorBackground: Int) {
+        // TODO static map api
         binding.navigationButton.apply {
             drawable.apply {
                 setTint(colorIcon)

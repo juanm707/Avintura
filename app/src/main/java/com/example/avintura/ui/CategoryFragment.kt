@@ -41,6 +41,7 @@ enum class Category {
     Winery, Dining, HotelSpa, Activity, Favorite // 0, 1, 2, 3, 4
 }
 
+// TODO sort by rating distance etc...
 class CategoryFragment : Fragment(),
     CategoryFavoriteListRecyclerViewAdapter.OnBusinessClickListener {
     private lateinit var categoryListViewModel: CategoryListViewModel

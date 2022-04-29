@@ -124,12 +124,12 @@ class MapsFragment : Fragment(), ClusterManager.OnClusterClickListener<AvinturaC
                 // settings in an effort to convince the user to change their
                 // decision.
                 Log.d("PermissionCheck", "Explaining")
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setMessage("Avintura uses your location to display better results.")
-                    .setPositiveButton("Close") { dialog, id ->
-
+                MaterialAlertDialogBuilder(requireContext())
+                    .setMessage("Avintura uses your location to display better results.")
+                    .setPositiveButton("Clock") { dialog, id ->
+                        // Respond to positive button press
                     }
-                builder.show()
+                    .show()
             }
         }
     }

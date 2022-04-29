@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class CategoryListViewModel(private val repository: AvinturaRepository, val category: Category) : ViewModel() {
 
     var lastClickedRecyclerViewPosition = 0
-    private val _connectionStatusError = MutableLiveData<Boolean>()
+    private val _connectionStatusError = MutableLiveData(false)
     val connectionStatus: LiveData<Boolean> = _connectionStatusError.distinctUntilChanged()
 
     private val _businesses = MutableLiveData<List<AvinturaCategoryBusiness>>()
