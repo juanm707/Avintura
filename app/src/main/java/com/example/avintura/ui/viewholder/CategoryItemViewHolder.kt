@@ -67,7 +67,7 @@ class CategoryItemViewHolder(itemView: View, private val onBusinessClickListener
         bCity: String,
         context: Context
     ) {
-        name.text = "${absoluteAdapterPosition + 1}. ${bName}"
+        name.text = bName
         picture.load(bImageUrl) {
             crossfade(true)
             crossfade(500)

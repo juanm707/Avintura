@@ -49,7 +49,6 @@ class BusinessDetailViewModel(private val repository: AvinturaRepository, privat
                 _reviews.value = repository.getReviews(id)
             } catch (e: Exception) {
                 Log.d("NetworkError", e.message.toString()) // if request to update data failed, use whats in DB if any
-
                 _business.value = repository.getBusiness(id)
                 if (_business.value == null)
                     _connectionStatusError.value = true

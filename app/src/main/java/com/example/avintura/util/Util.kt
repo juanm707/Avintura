@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.avintura.R
 import com.example.avintura.domain.AvinturaHour
 import com.example.avintura.ui.Category
+import com.example.avintura.viewmodels.CategorySort
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -308,4 +309,13 @@ fun getScaleAnimatorSet(view: View, vararg values: Float): ValueAnimator {
         scaleX,
         scaleY
     )
+}
+
+fun CategorySort.getString(): String {
+    return when (this) {
+        CategorySort.BEST_MATCH -> "best_match"
+        CategorySort.DISTANCE -> "distance"
+        CategorySort.RATING -> "rating"
+        CategorySort.REVIEW_COUNT -> "review_count"
+    }
 }

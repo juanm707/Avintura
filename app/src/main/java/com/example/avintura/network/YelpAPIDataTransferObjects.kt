@@ -1,5 +1,6 @@
 package com.example.avintura.network
 
+import android.util.Log
 import com.example.avintura.database.*
 import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.domain.AvinturaCategoryBusiness
@@ -131,6 +132,7 @@ fun YelpBusinessContainer.asDatabaseModel(): List<Business> {
 fun YelpBusinessContainer.asCategoryTypeModel(categoryType: Int, offset: Int): List<CategoryType> {
     val start = offset + 1
     return businesses.mapIndexed { index, yelpBusiness ->
+        Log.d("CategoryTypeModel", "${yelpBusiness.name} | ${yelpBusiness.id} | ${index + start}")
         CategoryType(
             yelpBusiness.id,
             categoryType,

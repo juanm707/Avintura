@@ -14,6 +14,7 @@ import com.example.avintura.paging.YelpCategoryPagingDataSource
 import com.example.avintura.ui.Category
 import com.example.avintura.util.getString
 import com.example.avintura.util.getThingsToDoCategories
+import com.example.avintura.viewmodels.CategorySort
 import kotlinx.coroutines.flow.Flow
 
 class AvinturaRepository(
@@ -57,13 +58,16 @@ class AvinturaRepository(
         limit: Int,
         radius: Int,
         deleteCategoryType: Boolean,
-        categoryType: Category
+        categoryType: Category,
+        categorySort: CategorySort?
     ) {
+        val sort = categorySort?.getString() ?: ""
         val categoryString = if (categoryType == Category.Activity) getThingsToDoCategories() else null
         val businessesFromNetwork = retrofitYelpService.searchBusinesses(
             searchTerm = searchTerm,
             location = location,
             offset = offset,
+            sortBy = sort,
             limit = limit,
             radius = radius,
             categories = categoryString
@@ -71,11 +75,12 @@ class AvinturaRepository(
         if (businessesFromNetwork.businesses.isNotEmpty() && deleteCategoryType)
             categoryTypeDao.delete(categoryType.ordinal)
         businessDao.insertAll(businessesFromNetwork.asDatabaseModel())
-        categoryTypeDao.insertAll(businessesFromNetwork.asCategoryTypeModel(categoryType.ordinal, offset))
+        if (categorySort == CategorySort.BEST_MATCH)
+            categoryTypeDao.insertAll(businessesFromNetwork.asCategoryTypeModel(categoryType.ordinal, offset))
     }
 
     // @OptIn(ExperimentalPagingApi::class)
-    fun getCategoryResultStream(category: Category): Flow<PagingData<YelpBusiness>> {
+    fun getCategoryResultStream(category: Category, sortBy: CategorySort): Flow<PagingData<YelpBusiness>> {
         Log.d("AvinturaRepository", "AvinturaRepository::getCategoryResultsStream New category: ${category.getString()}")
         // val pagingSourceFactory = { database.categoryTypeDao().getBusinesses(category.ordinal)}
         return Pager(
@@ -84,7 +89,7 @@ class AvinturaRepository(
                 enablePlaceholders = false,
                 prefetchDistance = 10
             ),
-            pagingSourceFactory = { YelpCategoryPagingDataSource(retrofitYelpService, category)}
+            pagingSourceFactory = { YelpCategoryPagingDataSource(retrofitYelpService, category, sortBy)}
         ).flow
     }
     // TODO pass in database? so store in paging source?

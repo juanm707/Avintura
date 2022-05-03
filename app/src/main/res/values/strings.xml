@@ -144,4 +144,9 @@
     <string name="powered_by">POWERED BY</string>
     <string name="local_events_channel">local_events_channel</string>
     <string name="local_events_channel_description">Get notified about featured local events</string>
+    <string name="sort_by">Sort By</string>
+    <string name="best_match">Best Match</string>
+    <string name="rating">Rating</string>
+    <string name="review_count">Review Count</string>
+    <string name="distance">Distance</string>
 </resources>

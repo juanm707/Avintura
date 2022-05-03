@@ -11,8 +11,11 @@ import com.example.avintura.ui.Category
 import com.example.avintura.util.DEFAULT_SEARCH_LOCATION
 import com.example.avintura.util.DEFAULT_SEARCH_RADIUS
 import com.example.avintura.util.getString
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+
+enum class CategorySort {
+    BEST_MATCH, RATING, REVIEW_COUNT, DISTANCE
+}
 
 class CategoryListViewModel(private val repository: AvinturaRepository, val category: Category) : ViewModel() {
 
@@ -23,13 +26,20 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
     private val _businesses = MutableLiveData<List<AvinturaCategoryBusiness>>()
     val businesses: LiveData<List<AvinturaCategoryBusiness>> = _businesses
 
-    var businessesPaging: LiveData<PagingData<YelpBusiness>> = repository.getCategoryResultStream(category).cachedIn(viewModelScope).asLiveData()
+    private val _sortBy = MutableLiveData(CategorySort.BEST_MATCH)
+    val sortBy: LiveData<CategorySort> = _sortBy
+
+    var businessesPaging: LiveData<PagingData<YelpBusiness>> = _sortBy.switchMap { categorySort ->
+        repository.getCategoryResultStream(category, categorySort).cachedIn(viewModelScope).asLiveData()
+    }
+    //var businessesPaging: LiveData<PagingData<YelpBusiness>> = repository.getCategoryResultStream(category).cachedIn(viewModelScope).asLiveData()
 
     var offset = 0
     var limit = 30
     var delete = true
 
     init {
+        // TODO need to cache from category too
         refreshDataFromNetwork() // copy paging initial lode, which is 3 * page size
     }
 
@@ -44,7 +54,8 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
                         limit,
                         DEFAULT_SEARCH_RADIUS,
                         delete,
-                        category
+                        category,
+                        _sortBy.value
                     )
                     _connectionStatusError.value = false
                     limit = 10
@@ -64,10 +75,23 @@ class CategoryListViewModel(private val repository: AvinturaRepository, val cate
         }
     }
 
+    fun setSortType(categorySort: CategorySort) {
+        _sortBy.value = categorySort
+        if (categorySort == CategorySort.BEST_MATCH)
+            delete = true
+        resetParams()
+        refreshDataFromNetwork()
+    }
+
     fun getCachedData() {
         viewModelScope.launch {
             _businesses.value = repository.getBusinessesByCategory(category)
         }
+    }
+
+    private fun resetParams() {
+        offset = 0
+        limit = 30
     }
 
 //    fun updateFavorite(position: Int) {

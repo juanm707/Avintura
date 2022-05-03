@@ -5,9 +5,28 @@
     tools:context="com.example.avintura.ui.CategoryFragment">
     <item
         android:id="@+id/action_map"
-        android:orderInCategory="100"
         android:enabled="false"
         android:icon="@drawable/ic_baseline_map_24"
         android:title="@string/view_map"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_baseline_sort_24"
+        android:title="@string/sort_by"
+        app:showAsAction="ifRoom">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item android:id="@+id/best_match"
+                    android:checked="true"
+                    android:title="@string/best_match" />
+                <item android:id="@+id/rating"
+                    android:title="@string/rating" />
+                <item android:id="@+id/review_count"
+                    android:title="@string/review_count" />
+                <item android:id="@+id/distance"
+                    android:title="@string/distance" />
+            </group>
+        </menu>
+    </item>
 </menu>

@@ -1,5 +1,6 @@
 package com.example.avintura.paging
 
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.avintura.network.YelpAPINetwork
@@ -10,12 +11,17 @@ import com.example.avintura.util.DEFAULT_SEARCH_LOCATION
 import com.example.avintura.util.DEFAULT_SEARCH_RADIUS
 import com.example.avintura.util.getString
 import com.example.avintura.util.getThingsToDoCategories
+import com.example.avintura.viewmodels.CategorySort
 import retrofit2.HttpException
 import java.io.IOException
 
 const val YELP_NETWORK_PAGE_SIZE = 10
 
-class YelpCategoryPagingDataSource(private val yelpApiService: YelpApiService, private val category: Category) : PagingSource<Int, YelpBusiness>() {
+class YelpCategoryPagingDataSource(
+    private val yelpApiService: YelpApiService,
+    private val category: Category,
+    private val sortBy: CategorySort
+) : PagingSource<Int, YelpBusiness>() {
     override fun getRefreshKey(state: PagingState<Int, YelpBusiness>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(10)
@@ -31,6 +37,7 @@ class YelpCategoryPagingDataSource(private val yelpApiService: YelpApiService, p
                 searchTerm = category.getString(),
                 location = DEFAULT_SEARCH_LOCATION,
                 offset = offset,
+                sortBy = sortBy.getString(),
                 limit = params.loadSize,
                 radius = DEFAULT_SEARCH_RADIUS,
                 categories = categoryString

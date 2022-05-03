@@ -2,9 +2,7 @@ package com.example.avintura.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.core.graphics.drawable.DrawableCompat
@@ -15,37 +13,33 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.paging.LoadState
-import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
-import com.example.avintura.database.asCategoryDomainModel
 import com.example.avintura.databinding.FragmentCategoryBinding
-import com.example.avintura.network.YelpBusiness
 import com.example.avintura.ui.adapter.CategoryFavoriteListRecyclerViewAdapter
 import com.example.avintura.ui.adapter.CategoryResultListRecyclerViewAdapter
-import com.example.avintura.ui.adapter.ViewPagerTopRecyclerViewAdapter
 import com.example.avintura.util.getProgressBarColor
+import com.example.avintura.util.getString
 import com.example.avintura.util.setCategoryTileBackground
 import com.example.avintura.util.setUIColorByCategory
 import com.example.avintura.viewmodels.CategoryListViewModel
 import com.example.avintura.viewmodels.CategoryListViewModelFactory
+import com.example.avintura.viewmodels.CategorySort
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.text.FieldPosition
 
 
 enum class Category {
-    Winery, Dining, HotelSpa, Activity, Favorite // 0, 1, 2, 3, 4
+    Winery, Dining, HotelSpa, Activity, Favorite
 }
 
 // TODO sort by rating distance etc...
-class CategoryFragment : Fragment(),
-    CategoryFavoriteListRecyclerViewAdapter.OnBusinessClickListener {
+class CategoryFragment : Fragment(), CategoryFavoriteListRecyclerViewAdapter.OnBusinessClickListener {
     private lateinit var categoryListViewModel: CategoryListViewModel
     private lateinit var categoryListViewModelFactory: CategoryListViewModelFactory
+    private var scroll = false
 
     private var _binding: FragmentCategoryBinding? = null
     // This property is only valid between onCreateView and
@@ -114,8 +108,13 @@ class CategoryFragment : Fragment(),
 
         viewLifecycleOwner.lifecycleScope.launch {
             categoryAdapter.loadStateFlow.collect { loadState ->
-                if (loadState.refresh is LoadState.NotLoading)
+                if (loadState.refresh is LoadState.NotLoading) {
                     binding.progressCircular.visibility = View.GONE
+                    if (scroll) {
+                        binding.categoryRecyclerView.scrollToPosition(0)
+                        scroll = !scroll
+                    }
+                }
 
                 if (loadState.append is LoadState.Loading || loadState.source.append is LoadState.Loading) {
                     // add to cache/room db
@@ -166,6 +165,7 @@ class CategoryFragment : Fragment(),
     }
 
     private fun setUpToolbar() {
+        setSortMenuCheckedItem()
         categoryListViewModel.connectionStatus.observe(viewLifecycleOwner) { error ->
             binding.categoryToolbar.menu.findItem(R.id.action_map).isEnabled = !error
         }
@@ -179,7 +179,47 @@ class CategoryFragment : Fragment(),
                     findNavController().navigate(action)
                     true
                 }
+                R.id.best_match -> {
+                    changeSortType(CategorySort.BEST_MATCH, item)
+                    true
+                }
+                R.id.distance -> {
+                    changeSortType(CategorySort.DISTANCE, item)
+                    true
+                }
+                R.id.review_count -> {
+                    changeSortType(CategorySort.REVIEW_COUNT, item)
+                    true
+                }
+                R.id.rating -> {
+                    changeSortType(CategorySort.RATING, item)
+                    true
+                }
                 else -> super.onOptionsItemSelected(item)
+            }
+        }
+    }
+
+    private fun changeSortType(categorySort: CategorySort, item: MenuItem) {
+        categoryListViewModel.setSortType(categorySort)
+        scroll = true
+    }
+
+    private fun setSortMenuCheckedItem() {
+        categoryListViewModel.sortBy.observe(viewLifecycleOwner) { sort ->
+            when(sort) {
+                CategorySort.BEST_MATCH -> {
+                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.best_match).isChecked = true
+                }
+                CategorySort.RATING -> {
+                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.rating).isChecked = true
+                }
+                CategorySort.REVIEW_COUNT -> {
+                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.review_count).isChecked = true
+                }
+                CategorySort.DISTANCE -> {
+                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.distance).isChecked = true
+                }
             }
         }
     }
@@ -194,19 +234,20 @@ class CategoryFragment : Fragment(),
         arrowIcon.color = color
         binding.categoryToolbar.setTitleTextColor(color)
         requireActivity().window.statusBarColor = color
+        setToolbarIconColor(binding.categoryToolbar.menu.findItem(R.id.action_map), color)
+        setToolbarIconColor(binding.categoryToolbar.menu.findItem(R.id.action_sort), color)
+    }
 
-        val mapIcon = binding.categoryToolbar.menu.findItem(R.id.action_map)
+    private fun setToolbarIconColor(item: MenuItem, color: Int) {
         DrawableCompat.setTint(
-            DrawableCompat.wrap(mapIcon.icon),
+            DrawableCompat.wrap(item.icon),
             color
         )
     }
 
     override fun onBusinessClick(id: String, name: String, position: Int) {
         categoryListViewModel.lastClickedRecyclerViewPosition = position
-        val action = CategoryFragmentDirections.actionCategoryFragmentToBusinessDetailFragment(
-            id,
-            name)
+        val action = CategoryFragmentDirections.actionCategoryFragmentToBusinessDetailFragment(id, name)
         findNavController().navigate(action)
     }
 

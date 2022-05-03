@@ -224,6 +224,10 @@ class BusinessDetailFragment : Fragment() {
                     adapter = HoursRecyclerViewAdapter(hours)
                 }
             }
+            else {
+                binding.openOrClosed.text = "No Hours"
+                binding.noHoursAvailable.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -534,7 +538,6 @@ class BusinessDetailFragment : Fragment() {
     }
 
     private fun setNavigationButtonColor(colorIcon: Int, colorBackground: Int) {
-        // TODO static map api
         binding.navigationButton.apply {
             drawable.apply {
                 setTint(colorIcon)
