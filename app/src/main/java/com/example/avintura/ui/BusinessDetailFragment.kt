@@ -348,7 +348,7 @@ class BusinessDetailFragment : Fragment() {
                 val encodedAddress = setAndReturnMapAddress(parsedAddress).joinToString("+")
 
                 binding.navigationButton.setOnClickListener {
-                    callNavigationIntent(encodedAddress)
+                    callMapIntent("google.navigation:q=$encodedAddress")
                 }
 
                 binding.staticMapImage.load(getStaticMapUrl(encodedAddress, business)) {
@@ -357,8 +357,9 @@ class BusinessDetailFragment : Fragment() {
                             binding.staticMapImageCardView.visibility = View.GONE
                         },
                         onSuccess = { _, _ ->
+                            val zoomLevel = 16
                             binding.staticMapImageCardView.setOnClickListener {
-                                callNavigationIntent(encodedAddress)
+                               callMapIntent("geo:${business.coordinates.latitude},${business.coordinates.longitude}q=$encodedAddress?z=$zoomLevel")
                             }
                         }
                     )
@@ -390,8 +391,8 @@ class BusinessDetailFragment : Fragment() {
         }
     }
 
-    private fun callNavigationIntent(encodedAddress: String) {
-        val gmmIntentUri = Uri.parse("google.navigation:q=$encodedAddress")
+    private fun callMapIntent(uri: String) {
+        val gmmIntentUri = Uri.parse(uri)
         val intent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
         val chooser = Intent.createChooser(intent, null)
         try {

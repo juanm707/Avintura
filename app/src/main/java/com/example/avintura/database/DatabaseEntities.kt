@@ -32,6 +32,11 @@ data class Business(
 @Entity
 data class BusinessDetail(
     @PrimaryKey val id: String,
+    val name: String,
+    val rating: Float,
+    val imageUrl: String,
+    val reviewCount: Int,
+    val city: String,
     val alias: String?,
     val isClaimed: Int?,
     val isClosed: Int?,
@@ -69,11 +74,6 @@ data class BusinessWithFavoriteStatus(
 
 data class BusinessDetailWithFavoriteStatus(
     @Embedded val business: BusinessDetail,
-    val name: String?,
-    val rating: Float?,
-    val imageUrl: String?,
-    val reviewCount: Int?,
-    val city: String?,
     val favorite: Int
 )
 
@@ -172,7 +172,7 @@ fun List<BusinessWithFavoriteStatus>.asDomainModel(): List<AvinturaBusiness> {
 }
 
 fun BusinessDetailWithFavoriteStatus.asDomainModel(): AvinturaBusinessDetail {
-    val businessBasicInfo = AvinturaBusiness(business.id, name ?: "", rating ?: 0F, imageUrl ?: "", reviewCount ?: 0, city ?: "", favorite.toBoolean())
+    val businessBasicInfo = AvinturaBusiness(business.id, business.name, business.rating, business.imageUrl, business.reviewCount, business.city, favorite.toBoolean())
     return AvinturaBusinessDetail(
         businessBasicInfo,
         business.alias,

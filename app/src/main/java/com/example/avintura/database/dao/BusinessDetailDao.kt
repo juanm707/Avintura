@@ -12,7 +12,7 @@ import com.example.avintura.database.BusinessDetailWithFavoriteStatus
 @Dao
 interface BusinessDetailDao {
 
-    @Query("SELECT bd.*, f.favorite, b.name, b.rating, b.imageUrl, b.reviewCount, b.city FROM BusinessDetail bd LEFT JOIN Business b ON b.id = bd.id LEFT JOIN Favorite f ON f.id = b.id WHERE bd.id = :businessId")
+    @Query("SELECT bd.*, f.favorite FROM BusinessDetail bd LEFT JOIN Favorite f ON f.id = bd.id WHERE bd.id = :businessId")
     suspend fun getBusiness(businessId: String): BusinessDetailWithFavoriteStatus?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

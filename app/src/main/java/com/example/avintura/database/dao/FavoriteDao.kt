@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FavoriteDao {
 
+    // TODO sometimes not stored in Business entity
     @Query("SELECT  b.*, f.favorite FROM Favorite f LEFT JOIN Business b ON f.id = b.id WHERE f.favorite = 1")
     suspend fun getFavorites() : List<CategoryBusinessWithFavoriteStatus>
 

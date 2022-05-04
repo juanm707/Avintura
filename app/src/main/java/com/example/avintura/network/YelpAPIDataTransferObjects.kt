@@ -167,7 +167,7 @@ fun YelpBusinessDetail.asDetailDatabaseModel(): BusinessDetail {
     }
 
     return BusinessDetail(
-        id, alias, isClaimed.toInt(), isClosed.toInt(), url, phone, displayPhone,
+        id, name, rating, imageUrl, reviewCount, location.city, alias, isClaimed.toInt(), isClosed.toInt(), url, phone, displayPhone,
         displayAddress, categoriesWithDelimiter, dbLocation, price, coordinate
     )
 }
