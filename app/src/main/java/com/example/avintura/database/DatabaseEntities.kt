@@ -189,6 +189,18 @@ fun BusinessDetailWithFavoriteStatus.asDomainModel(): AvinturaBusinessDetail {
     )
 }
 
+//fun List<Business>.asDomainModel(): List<AvinturaBusiness> {
+//    return map {
+//        AvinturaBusiness(
+//            it.name,
+//            it.rating,
+//            it.imageUrl,
+//            it.reviewCount,
+//            it.city
+//        )
+//    }
+//}
+
 fun List<Photo>.asPhotoDomainModel(): List<AvinturaPhoto> {
     return map {
         AvinturaPhoto(

@@ -14,6 +14,7 @@
         <!-- Customize your theme here. -->
         <item name="android:fontFamily">@font/montserrat</item>
         <item name="actionButtonStyle">@style/ActionButtonStyle</item>
+        <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
 
     </style>
 
@@ -49,6 +50,12 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="cursorColor" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@drawable/cursor</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 
     <!-- SPLASH SCREEN -->
     <style name="SplashScreenTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">

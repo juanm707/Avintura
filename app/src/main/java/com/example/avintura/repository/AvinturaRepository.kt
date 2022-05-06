@@ -152,4 +152,8 @@ class AvinturaRepository(
     suspend fun insert(favorite: Favorite): Long {
         return favoriteDao.insert(favorite)
     }
+
+    fun searchDatabaseForBusiness(searchQuery: String): Flow<List<String>> {
+        return businessDao.searchDatabaseForBusinesses(searchQuery)
+    }
 }

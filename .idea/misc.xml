@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/avintura_bottle_text_v2.xml" value="0.33958333333333335" />
         <entry key="app/src/main/res/drawable/cluster_background.xml" value="0.25390625" />
         <entry key="app/src/main/res/drawable/crown_svgrepo_com.xml" value="0.33958333333333335" />
+        <entry key="app/src/main/res/drawable/cursor.xml" value="0.325" />
         <entry key="app/src/main/res/drawable/default_dot.xml" value="0.25390625" />
         <entry key="app/src/main/res/drawable/food_svgrepo_com.xml" value="0.2138157894736842" />
         <entry key="app/src/main/res/drawable/food_svgrepo_com_tile.xml" value="0.2138157894736842" />
@@ -57,6 +58,7 @@
         <entry key="app/src/main/res/layout/hours_item.xml" value="0.20394736842105263" />
         <entry key="app/src/main/res/layout/map_marker_info_window.xml" value="0.75" />
         <entry key="app/src/main/res/layout/review_item.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/search_row_result.xml" value="0.18" />
         <entry key="app/src/main/res/layout/view_pager_top_item.xml" value="0.25" />
         <entry key="app/src/main/res/menu/menu_category.xml" value="0.25" />
         <entry key="app/src/main/res/menu/menu_detail.xml" value="0.21875" />

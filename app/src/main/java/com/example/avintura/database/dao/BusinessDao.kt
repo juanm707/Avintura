@@ -14,6 +14,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BusinessDao {
 
+    // For search view
+    @Query(
+        "SELECT b.name FROM Business b WHERE b.name LIKE :searchQuery " +
+                "UNION " +
+                "SELECT bd.name FROM BusinessDetail bd WHERE bd.name LIKE :searchQuery")
+    fun searchDatabaseForBusinesses(searchQuery: String): Flow<List<String>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(businesses: List<Business>)
 

@@ -2,6 +2,7 @@ package com.example.avintura.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.avintura.database.Business
 import com.example.avintura.database.BusinessWithFavoriteStatus
 import com.example.avintura.database.Favorite
 import com.example.avintura.database.asDomainModel
@@ -54,6 +55,10 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
                 repository.insert(favorite)
             }
         }
+    }
+
+    fun searchDatabaseForBusinesses(searchQuery: String): LiveData<List<String>> {
+        return repository.searchDatabaseForBusiness(searchQuery).asLiveData()
     }
 }
 
