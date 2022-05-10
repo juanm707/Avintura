@@ -156,4 +156,12 @@ class AvinturaRepository(
     fun searchDatabaseForBusiness(searchQuery: String): Flow<List<String>> {
         return businessDao.searchDatabaseForBusinesses(searchQuery)
     }
+
+    suspend fun searchAutocomplete(query: String, latitude: Double, longitude: Double): YelpAutocompleteContainer {
+        return retrofitYelpService.getAutocompleteResults(
+            text = query,
+            latitude = latitude,
+            longitude = longitude
+        )
+    }
 }

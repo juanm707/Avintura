@@ -1,6 +1,9 @@
 package com.example.avintura.ui
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -8,7 +11,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.*
+import android.view.animation.OvershootInterpolator
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.animation.doOnEnd
@@ -25,6 +28,7 @@ import com.example.avintura.AvinturaApplication
 import com.example.avintura.R
 import com.example.avintura.databinding.FragmentHomeBinding
 import com.example.avintura.domain.AvinturaBusiness
+import com.example.avintura.network.getSearchViewItems
 import com.example.avintura.ui.adapter.BusinessSearchResultAdapter
 import com.example.avintura.ui.adapter.ViewPagerTopRecyclerViewAdapter
 import com.example.avintura.util.getScaleAnimatorSet
@@ -38,7 +42,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         HomeViewModelFactory((requireActivity().application as AvinturaApplication).repository)
     }
 
-    private val businessSearchResultAdapter: BusinessSearchResultAdapter by lazy { BusinessSearchResultAdapter() }
+    private val businessSearchResultAdapter: BusinessSearchResultAdapter by lazy { BusinessSearchResultAdapter(requireContext()) }
 
     private var _binding: FragmentHomeBinding? = null
     // This property is only valid between onCreateView and
@@ -118,53 +122,73 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         if (searchItem != null) {
             val searchView = searchItem.actionView as SearchView
             searchView.queryHint = "Search business..."
-            searchItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-                override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                    binding.searchResultRecyclerView.visibility = View.VISIBLE
-                    Log.d("SearchView", "opened")
-                    return true
-                }
-
-                override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                    binding.searchResultRecyclerView.visibility = View.GONE
-                    Log.d("SearchView", "closed")
-                    return true
-                }
-
-            })
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    if (query != null) {
-                        Log.d("TextSubmit", query)
-                    }
-                    return true
-                }
-
-                override fun onQueryTextChange(query: String?): Boolean {
-                    if (query != null) {
-                        Log.d("TextChange", query)
-                        searchDatabaseForBusinesses(query)
-                    }
-                    return true
-                }
-
-            })
+            searchItem.setOnActionExpandListener(getOnActionExpandListener())
+            searchView.setOnQueryTextListener(getOnQueryTextListener())
         }
     }
 
-    private fun searchDatabaseForBusinesses(query: String) {
+    private fun getOnActionExpandListener(): MenuItem.OnActionExpandListener {
+        return object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                binding.searchResultRecyclerView.visibility = View.VISIBLE
+                Log.d("SearchView", "opened")
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                binding.searchResultRecyclerView.visibility = View.GONE
+                Log.d("SearchView", "closed")
+                return true
+            }
+        }
+    }
+
+    private fun getOnQueryTextListener(): SearchView.OnQueryTextListener? {
+        return object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    Log.d("TextSubmit", query)
+                }
+                return true
+            }
+            override fun onQueryTextChange(query: String?): Boolean {
+                if (query != null) {
+                    Log.d("TextChange", query)
+                    searchNetwork(query)
+                    // searchDatabaseForBusinesses(query)
+                }
+                return true
+            }
+        }
+    }
+
+    private fun searchNetwork(query: String) {
         // %" "% because our custom sql query will require that
         if (query.isNotEmpty()) {
-            val searchQuery = "%$query%"
-            homeViewModel.searchDatabaseForBusinesses(searchQuery)
-                .observe(viewLifecycleOwner) { businesses ->
-                    businesses.let {
-                        businessSearchResultAdapter.setData(businesses)
-                    }
-                }
+            homeViewModel.searchAutocompleteFromNetwork(query)
         } else
             businessSearchResultAdapter.setData(emptyList())
+
+        homeViewModel.autoCompleteResults.observe(viewLifecycleOwner) { autoCompleteContainer ->
+            autoCompleteContainer.let {
+                businessSearchResultAdapter.setData(autoCompleteContainer.getSearchViewItems())
+            }
+        }
     }
+
+//    private fun searchDatabaseForBusinesses(query: String) {
+//        // %" "% because our custom sql query will require that
+//        if (query.isNotEmpty()) {
+//            val searchQuery = "%$query%"
+//            homeViewModel.searchDatabaseForBusinesses(searchQuery)
+//                .observe(viewLifecycleOwner) { businesses ->
+//                    businesses.let {
+//                        businessSearchResultAdapter.setData(businesses)
+//                    }
+//                }
+//        } else
+//            businessSearchResultAdapter.setData(emptyList())
+//    }
 
     private fun setBusinessesObserver() {
         binding.homeViewPager.adapter = ViewPagerTopRecyclerViewAdapter(requireContext(), this, emptyList())

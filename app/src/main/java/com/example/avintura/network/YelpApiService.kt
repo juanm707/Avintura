@@ -47,6 +47,14 @@ interface YelpApiService {
         @Header("Authorization") authHeader: String = "Bearer $API_KEY",
         @Path("id") id: String
     ) : YelpReviewContainer
+
+    @GET("autocomplete")
+    suspend fun getAutocompleteResults(
+        @Header("Authorization") authHeader: String = "Bearer $API_KEY",
+        @Query("text") text: String,
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double
+    ) : YelpAutocompleteContainer
 }
 
 object YelpAPINetwork {

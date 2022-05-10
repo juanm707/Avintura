@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.avintura.database.*
 import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.domain.AvinturaCategoryBusiness
+import com.example.avintura.domain.SearchViewItem
 import com.example.avintura.util.toInt
 import com.squareup.moshi.Json
 
@@ -11,6 +12,29 @@ data class YelpBusinessContainer(
     val total: Int,
     @Json(name = "businesses") var businesses: List<YelpBusiness>
 )
+
+data class YelpAutocompleteContainer(
+    val terms: List<Term>,
+    val businesses: List<YelpAutocompleteBusiness>,
+    val categories: List<Category>
+)
+
+data class YelpAutocompleteBusiness(
+    val name: String,
+    val id: String
+) : SearchViewItem() {
+    override fun getString(): String {
+        return name
+    }
+}
+
+data class Term(
+    val text: String
+) : SearchViewItem() {
+    override fun getString(): String {
+        return text
+    }
+}
 
 data class YelpBusiness(
     val id: String,
@@ -49,7 +73,11 @@ data class YelpBusinessDetail(
 data class Category(
     val alias: String,
     val title: String
-)
+) : SearchViewItem() {
+    override fun getString(): String {
+        return title
+    }
+}
 
 data class Coordinate(
     val latitude: Double,
@@ -213,5 +241,23 @@ fun YelpBusinessDetail.asOpenDatabaseModel(): List<com.example.avintura.database
             it.day,
             it.isOvernight.toInt()
         )
+    }
+}
+
+fun YelpAutocompleteContainer.getSearchViewItems(): List<SearchViewItem> {
+    return if (businesses.isEmpty() && terms.isEmpty() && categories.isEmpty())
+        emptyList()
+    else {
+        val results = mutableListOf<SearchViewItem>()
+        terms.forEach { term ->
+            results.add(term)
+        }
+        businesses.forEach { business ->
+            results.add(business)
+        }
+        categories.forEach { category ->
+            results.add(category)
+        }
+        results
     }
 }

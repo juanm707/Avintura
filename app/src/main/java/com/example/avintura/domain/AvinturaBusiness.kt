@@ -79,3 +79,7 @@ class AvinturaCategoryBusiness(
         return "$price$favoriteExt"
     }
 }
+
+abstract class SearchViewItem {
+    abstract fun getString(): String
+}

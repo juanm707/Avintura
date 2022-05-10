@@ -8,6 +8,7 @@ import com.example.avintura.database.Favorite
 import com.example.avintura.database.asDomainModel
 import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.network.YelpAPINetwork
+import com.example.avintura.network.YelpAutocompleteContainer
 import com.example.avintura.network.YelpBusinessContainer
 import com.example.avintura.repository.AvinturaRepository
 import com.example.avintura.util.toInt
@@ -18,6 +19,9 @@ import kotlinx.coroutines.launch
 class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
     private val _connectionStatusError = MutableSharedFlow<String>()
     val connectionStatus = _connectionStatusError.asSharedFlow()
+
+    private val _autoCompleteResults = MutableLiveData<YelpAutocompleteContainer>()
+    val autoCompleteResults: LiveData<YelpAutocompleteContainer> = _autoCompleteResults
 
     // TOP RESULTS
     val businesses: LiveData<List<AvinturaBusiness>> = repository.featuredBusinesses.asLiveData().map { list ->
@@ -44,6 +48,19 @@ class HomeViewModel(private val repository: AvinturaRepository) : ViewModel() {
                 _connectionStatusError.emit(e.message.toString())
             }
             doneLoading = true
+        }
+    }
+
+    fun searchAutocompleteFromNetwork(searchQuery: String) {
+        viewModelScope.launch {
+            try {
+                _autoCompleteResults.value = repository.searchAutocomplete(searchQuery, 38.464673, -122.425152)
+                _connectionStatusError.emit("")
+            }
+            catch (e: Exception) {
+                Log.d("NetworkError", e.message.toString())
+                _connectionStatusError.emit(e.message.toString())
+            }
         }
     }
 
