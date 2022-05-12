@@ -83,3 +83,9 @@ class AvinturaCategoryBusiness(
 abstract class SearchViewItem {
     abstract fun getString(): String
 }
+
+class Header(private val title: String) : SearchViewItem() {
+    override fun getString(): String {
+        return title
+    }
+}

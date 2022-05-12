@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.avintura.database.*
 import com.example.avintura.domain.AvinturaBusiness
 import com.example.avintura.domain.AvinturaCategoryBusiness
+import com.example.avintura.domain.Header
 import com.example.avintura.domain.SearchViewItem
 import com.example.avintura.util.toInt
 import com.squareup.moshi.Json
@@ -249,12 +250,21 @@ fun YelpAutocompleteContainer.getSearchViewItems(): List<SearchViewItem> {
         emptyList()
     else {
         val results = mutableListOf<SearchViewItem>()
+
+        if (terms.isNotEmpty())
+            results.add(Header("Terms"))
         terms.forEach { term ->
             results.add(term)
         }
+
+        if (businesses.isNotEmpty())
+            results.add(Header("Businesses"))
         businesses.forEach { business ->
             results.add(business)
         }
+
+        if (categories.isNotEmpty())
+            results.add(Header("Categories"))
         categories.forEach { category ->
             results.add(category)
         }

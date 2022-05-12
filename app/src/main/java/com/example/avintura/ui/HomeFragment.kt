@@ -76,6 +76,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
             setHasFixedSize(true)
             adapter = businessSearchResultAdapter
         }
+        observeSearchResults()
         setUpToolbar()
         setBusinessesObserver()
         setConnectionStatusObserver()
@@ -162,18 +163,18 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         }
     }
 
+    private fun observeSearchResults() {
+        homeViewModel.autoCompleteResults.observe(viewLifecycleOwner) { autoCompleteContainer ->
+            businessSearchResultAdapter.setData(autoCompleteContainer.getSearchViewItems())
+        }
+    }
+
     private fun searchNetwork(query: String) {
         // %" "% because our custom sql query will require that
         if (query.isNotEmpty()) {
             homeViewModel.searchAutocompleteFromNetwork(query)
         } else
             businessSearchResultAdapter.setData(emptyList())
-
-        homeViewModel.autoCompleteResults.observe(viewLifecycleOwner) { autoCompleteContainer ->
-            autoCompleteContainer.let {
-                businessSearchResultAdapter.setData(autoCompleteContainer.getSearchViewItems())
-            }
-        }
     }
 
 //    private fun searchDatabaseForBusinesses(query: String) {
