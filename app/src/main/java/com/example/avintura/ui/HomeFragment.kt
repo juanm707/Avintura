@@ -42,7 +42,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         HomeViewModelFactory((requireActivity().application as AvinturaApplication).repository)
     }
 
-    private val businessSearchResultAdapter: BusinessSearchResultAdapter by lazy { BusinessSearchResultAdapter(requireContext()) }
+    private val businessSearchResultAdapter: BusinessSearchResultAdapter by lazy { BusinessSearchResultAdapter(requireContext(), this) }
 
     private var _binding: FragmentHomeBinding? = null
     // This property is only valid between onCreateView and
@@ -71,11 +71,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         requireActivity().window.statusBarColor = ContextCompat.getColor(requireContext(), R.color.blue_sapphire)
         animateCrown()
         setUpNavigation()
-        binding.searchResultRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            setHasFixedSize(true)
-            adapter = businessSearchResultAdapter
-        }
+        setUpSearchRecyclerView()
         observeSearchResults()
         setUpToolbar()
         setBusinessesObserver()
@@ -106,9 +102,16 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         binding.homeToolbar.setupWithNavController(navController, appBarConfiguration)
     }
 
+    private fun setUpSearchRecyclerView() {
+        binding.searchResultRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            setHasFixedSize(true)
+            adapter = businessSearchResultAdapter
+        }
+    }
+
     private fun setUpToolbar() {
         // TODO profile fragment
-        // TODO search view
         binding.homeToolbar.title = getString(R.string.app_name)
         binding.homeToolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -155,8 +158,7 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
             override fun onQueryTextChange(query: String?): Boolean {
                 if (query != null) {
                     Log.d("TextChange", query)
-                    searchNetwork(query)
-                    // searchDatabaseForBusinesses(query)
+                    search(query)
                 }
                 return true
             }
@@ -164,12 +166,12 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
     }
 
     private fun observeSearchResults() {
-        homeViewModel.autoCompleteResults.observe(viewLifecycleOwner) { autoCompleteContainer ->
-            businessSearchResultAdapter.setData(autoCompleteContainer.getSearchViewItems())
+        homeViewModel.searchResults.observe(viewLifecycleOwner) { results ->
+            businessSearchResultAdapter.setData(results)
         }
     }
 
-    private fun searchNetwork(query: String) {
+    private fun search(query: String) {
         // %" "% because our custom sql query will require that
         if (query.isNotEmpty()) {
             homeViewModel.searchAutocompleteFromNetwork(query)
@@ -303,9 +305,12 @@ class HomeFragment : Fragment(), ViewPagerTopRecyclerViewAdapter.OnBusinessClick
         animatorSet.start()
     }
 
-    override fun onBusinessClick(position: Int) {
-        if (homeViewModel.businesses.value != null) {
+    override fun onBusinessClick(position: Int, id: String?, name: String?) {
+        if (position >= 0 && homeViewModel.businesses.value != null) {
             val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment(homeViewModel.businesses.value!![position].id, homeViewModel.businesses.value!![position].name)
+            findNavController().navigate(action)
+        } else if (id != null && name != null){
+            val action = HomeFragmentDirections.actionHomeFragmentToBusinessDetailFragment(id, name)
             findNavController().navigate(action)
         }
     }

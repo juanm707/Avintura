@@ -76,12 +76,12 @@ class ViewPagerTopRecyclerViewAdapter(
         }
 
         override fun onClick(v: View?) {
-            onBusinessClickListener.onBusinessClick(bindingAdapterPosition)
+            onBusinessClickListener.onBusinessClick(bindingAdapterPosition, null, null)
         }
     }
 
     interface OnBusinessClickListener {
-        fun onBusinessClick(position: Int)
+        fun onBusinessClick(position: Int, id: String?, name: String?)
         fun onFavoriteClick(position: Int)
     }
 }

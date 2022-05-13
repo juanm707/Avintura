@@ -2,6 +2,7 @@ package com.example.avintura.ui.adapter
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +19,9 @@ import com.example.avintura.domain.SearchViewItem
 import com.example.avintura.network.Category
 import com.example.avintura.network.Term
 import com.example.avintura.network.YelpAutocompleteBusiness
+import com.google.android.material.card.MaterialCardView
 
-class BusinessSearchResultAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BusinessSearchResultAdapter(private val context: Context, private val onBusinessClickListener: ViewPagerTopRecyclerViewAdapter.OnBusinessClickListener,) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var results: List<SearchViewItem> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -43,19 +45,31 @@ class BusinessSearchResultAdapter(private val context: Context) : RecyclerView.A
                 when (item) {
                     is YelpAutocompleteBusiness -> {
                         searchResultViewHolder.icon.setImageDrawable(getIcon(R.drawable.ic_baseline_location_city_24, R.color.viridian_green))
+                        searchResultViewHolder.itemView.setOnClickListener {
+                            Log.d("Business", item.id)
+                            onBusinessClickListener.onBusinessClick(-1, item.id, item.name)
+                        }
+                        searchResultViewHolder.cardView.setRippleColorResource(R.color.viridian_green)
                     }
                     is Term -> {
                         searchResultViewHolder.icon.setImageDrawable(getIcon(R.drawable.ic_baseline_text_snippet_24, R.color.rufous))
+                        searchResultViewHolder.itemView.setOnClickListener {
+
+                        }
+                        searchResultViewHolder.cardView.setRippleColorResource(R.color.rufous)
                     }
                     is Category -> {
                         searchResultViewHolder.icon.setImageDrawable(getIcon(R.drawable.ic_baseline_category_24, R.color.gamboge))
+                        searchResultViewHolder.itemView.setOnClickListener {
+
+                        }
+                        searchResultViewHolder.cardView.setRippleColorResource(R.color.gamboge)
                     }
                 }
             }
         }
     }
 
-    // TODO separate by type header view type
     override fun getItemViewType(position: Int): Int {
         return if (results[position] is Header) {
             0
@@ -71,6 +85,7 @@ class BusinessSearchResultAdapter(private val context: Context) : RecyclerView.A
     class BusinessSearchResultViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView = itemView.findViewById(R.id.search_result_name)
         val icon: ImageView = itemView.findViewById(R.id.search_result_icon)
+        val cardView: MaterialCardView = itemView.findViewById(R.id.search_result_card_view)
     }
 
     class SearchResultHeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

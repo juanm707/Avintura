@@ -201,6 +201,23 @@ fun YelpBusinessDetail.asDetailDatabaseModel(): BusinessDetail {
     )
 }
 
+fun YelpBusinessDetail.asBusinessDatabaseModel(): Business {
+    return Business(
+        id,
+        name,
+        rating,
+        imageUrl,
+        reviewCount,
+        location.city,
+        price,
+        null,
+        Coordinates(
+            coordinates.latitude,
+            coordinates.longitude
+        )
+    )
+}
+
 fun YelpReviewContainer.asReviewDatabaseModel(businessId: String): List<Review> {
     return reviews.map { r ->
         Review(
@@ -246,28 +263,24 @@ fun YelpBusinessDetail.asOpenDatabaseModel(): List<com.example.avintura.database
 }
 
 fun YelpAutocompleteContainer.getSearchViewItems(): List<SearchViewItem> {
-    return if (businesses.isEmpty() && terms.isEmpty() && categories.isEmpty())
-        emptyList()
-    else {
-        val results = mutableListOf<SearchViewItem>()
+    val results = mutableListOf<SearchViewItem>()
 
-        if (terms.isNotEmpty())
-            results.add(Header("Terms"))
-        terms.forEach { term ->
-            results.add(term)
-        }
-
-        if (businesses.isNotEmpty())
-            results.add(Header("Businesses"))
-        businesses.forEach { business ->
-            results.add(business)
-        }
-
-        if (categories.isNotEmpty())
-            results.add(Header("Categories"))
-        categories.forEach { category ->
-            results.add(category)
-        }
-        results
+    if (terms.isNotEmpty())
+        results.add(Header("Terms"))
+    terms.forEach { term ->
+        results.add(term)
     }
+
+    if (businesses.isNotEmpty())
+        results.add(Header("Businesses"))
+    businesses.forEach { business ->
+        results.add(business)
+    }
+
+    if (categories.isNotEmpty())
+        results.add(Header("Categories"))
+    categories.forEach { category ->
+        results.add(category)
+    }
+    return results
 }

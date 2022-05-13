@@ -51,6 +51,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 private const val STREET_ADDRESS_INDEX = 0
 private const val CITY_ADDRESS_INDEX = 1
 
+// TODO enlarge pics on click
+
 /**
  * Fragment that shows an individual business detail based on the passed id
  */

@@ -98,7 +98,9 @@ class AvinturaRepository(
         val businessFromNetwork = retrofitYelpService.getBusiness(
             id = businessId
         )
+
         businessDetailDao.insert(businessFromNetwork.asDetailDatabaseModel())
+        businessDao.insert(businessFromNetwork.asBusinessDatabaseModel())
 
         if (businessFromNetwork.photos.isNotEmpty())
             photoDao.delete(businessId)
@@ -153,7 +155,7 @@ class AvinturaRepository(
         return favoriteDao.insert(favorite)
     }
 
-    fun searchDatabaseForBusiness(searchQuery: String): Flow<List<String>> {
+    suspend fun searchDatabaseForBusiness(searchQuery: String): List<NameIdTuple> {
         return businessDao.searchDatabaseForBusinesses(searchQuery)
     }
 
