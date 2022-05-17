@@ -104,4 +104,7 @@ dependencies {
     // Jsoup
     implementation "org.jsoup:jsoup:1.14.3"
 
+    // Zoom image
+    implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+
 }
