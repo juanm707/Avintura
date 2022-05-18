@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageView
+    android:id="@+id/business_image_screen"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/yelp_logo"
+    android:adjustViewBounds="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+</ImageView>

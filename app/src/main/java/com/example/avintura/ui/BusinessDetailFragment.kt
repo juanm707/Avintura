@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.location.Location
 import android.net.Uri
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
@@ -30,8 +32,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.imageLoader
 import coil.load
+import coil.memory.MemoryCache
 import coil.request.ImageRequest
+import coil.request.ImageResult
 import com.example.avintura.AvinturaApplication
 import com.example.avintura.BuildConfig
 import com.example.avintura.R
@@ -51,8 +56,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 private const val STREET_ADDRESS_INDEX = 0
 private const val CITY_ADDRESS_INDEX = 1
 
-// TODO enlarge pics on click
-
 /**
  * Fragment that shows an individual business detail based on the passed id
  */
@@ -69,7 +72,7 @@ class BusinessDetailFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
+    
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -137,9 +140,33 @@ class BusinessDetailFragment : Fragment() {
                     crossfade(true)
                     crossfade(500)
                     error(R.drawable.ic_baseline_broken_image_24)
+                    listener(
+                        // pass two arguments
+                        onSuccess = { _, m ->
+                            photoImageViewList[i].setOnClickListener {
+                               displayImage(m)
+                            }
+                        }
+                    )
                 }
             }
         }
+    }
+
+    private fun displayImage(m: ImageResult.Metadata) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setPositiveButton("Close") { dialog, which ->
+                // Respond to positive button press
+            }
+            .setView(getDialogView(m.memoryCacheKey))
+            .show()
+    }
+
+    private fun getDialogView(d: MemoryCache.Key?): View {
+        val dialogLayout = layoutInflater.inflate(R.layout.business_image, null)
+        val bitMap: Bitmap? = d?.let { context?.imageLoader?.memoryCache?.get(it) }
+        dialogLayout.findViewById<ImageView>(R.id.business_image_screen).setImageBitmap(bitMap)
+        return dialogLayout
     }
 
     private fun setUpBusinessObserver() {
