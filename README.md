@@ -96,6 +96,7 @@ Insert gif or link to demo
 - Moshi
 - Coil
 - Google Maps SDK
+    -Static Maps API
 - Yelp API
 - Lottie
 - JSoup
