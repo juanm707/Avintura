@@ -7,13 +7,11 @@ Android app for tourists traveling to Napa Valley and Sonoma County which utiliz
 for wineries, restaurants, hotels, and more. Users can view different businesses, search by name, 
 search by category, sort by best match, rating, distance and review count. Users can also favorite 
 different businesses. On a business page, users can call, navigate, share, read reviews and hours, view images, 
-visit the official Yelp page, and more. App is also able to be used offline/with no internet connection.
-
+visit the official Yelp page, and more. Get notified weekly for local wine events. App is also able to be used offline/with no internet connection.
 
 ## Demo
 
 Insert gif or link to demo
-
 
 ## Screenshots
 
@@ -24,7 +22,6 @@ Insert gif or link to demo
 #### Home Screen
 
 ![Home Screen](https://drive.google.com/uc?id=1iDMHnolCI3jdacf3WWXL3qx51CUXIB1W)
-
 
 #### Business
 
@@ -75,6 +72,11 @@ Insert gif or link to demo
 ![Map](https://drive.google.com/uc?id=12a_tZ9PtMJtKZ39qkOfmTyzoyUguwtCS)
 
 ![Map Item](https://drive.google.com/uc?id=1GvBPQ_AHKrUrPIoCTysqes5ZfV6ISfdV)
+
+#### Notifications
+
+![Notification](https://drive.google.com/uc?id=1ElwX_uh6e7hutt_SGPJnqJBcl_TEn2ky)
+
 ## Architecture
 [Follows Google's Guide to App Architecture](https://developer.android.com/jetpack/guide)
 
