@@ -11,7 +11,7 @@ visit the official Yelp page, and more. Get notified weekly for local wine event
 
 ## Demo
 
-[Please click here to watch a demo video on YouTube.](https://youtu.be/witfnkltxkM)
+[Please click here to watch a demo video on YouTube.](https://youtu.be/xeEekv_qsRU)
 
 ## Screenshots
 
