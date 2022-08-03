@@ -20,7 +20,6 @@ import com.example.avintura.databinding.FragmentCategoryBinding
 import com.example.avintura.ui.adapter.CategoryFavoriteListRecyclerViewAdapter
 import com.example.avintura.ui.adapter.CategoryResultListRecyclerViewAdapter
 import com.example.avintura.util.getProgressBarColor
-import com.example.avintura.util.getString
 import com.example.avintura.util.setCategoryTileBackground
 import com.example.avintura.util.setUIColorByCategory
 import com.example.avintura.viewmodels.CategoryListViewModel
@@ -178,49 +177,34 @@ class CategoryFragment : Fragment(), CategoryFavoriteListRecyclerViewAdapter.OnB
                     findNavController().navigate(action)
                     true
                 }
-                R.id.best_match -> {
-                    changeSortType(CategorySort.BEST_MATCH, item)
-                    true
-                }
-                R.id.distance -> {
-                    changeSortType(CategorySort.DISTANCE, item)
-                    true
-                }
-                R.id.review_count -> {
-                    changeSortType(CategorySort.REVIEW_COUNT, item)
-                    true
-                }
-                R.id.rating -> {
-                    changeSortType(CategorySort.RATING, item)
-                    true
-                }
+                R.id.best_match -> changeSortType(CategorySort.BEST_MATCH)
+                R.id.distance -> changeSortType(CategorySort.DISTANCE)
+                R.id.review_count -> changeSortType(CategorySort.REVIEW_COUNT)
+                R.id.rating -> changeSortType(CategorySort.RATING)
                 else -> super.onOptionsItemSelected(item)
             }
         }
     }
 
-    private fun changeSortType(categorySort: CategorySort, item: MenuItem) {
+    private fun changeSortType(categorySort: CategorySort): Boolean {
         categoryListViewModel.setSortType(categorySort)
         scroll = true
+        return true
     }
 
     private fun setSortMenuCheckedItem() {
         categoryListViewModel.sortBy.observe(viewLifecycleOwner) { sort ->
             when(sort) {
-                CategorySort.BEST_MATCH -> {
-                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.best_match).isChecked = true
-                }
-                CategorySort.RATING -> {
-                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.rating).isChecked = true
-                }
-                CategorySort.REVIEW_COUNT -> {
-                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.review_count).isChecked = true
-                }
-                CategorySort.DISTANCE -> {
-                    binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(R.id.distance).isChecked = true
-                }
+                CategorySort.BEST_MATCH -> setMenuItemChecked(R.id.best_match)
+                CategorySort.RATING -> setMenuItemChecked(R.id.rating)
+                CategorySort.REVIEW_COUNT -> setMenuItemChecked(R.id.review_count)
+                CategorySort.DISTANCE -> setMenuItemChecked(R.id.distance)
             }
         }
+    }
+
+    private fun setMenuItemChecked(id: Int) {
+        binding.categoryToolbar.menu.findItem(R.id.action_sort).subMenu.findItem(id).isChecked = true
     }
 
     private fun setCategoryColor() {
