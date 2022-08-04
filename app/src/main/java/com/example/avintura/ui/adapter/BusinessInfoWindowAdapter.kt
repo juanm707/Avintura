@@ -29,7 +29,7 @@ import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.ui.IconGenerator
 
-class BusinessInfoWindowAdapter(val context: Context)  : GoogleMap.InfoWindowAdapter{
+class BusinessInfoWindowAdapter(val context: Context)  : GoogleMap.InfoWindowAdapter {
     private var window = LayoutInflater.from(context).inflate(R.layout.map_marker_info_window, null)
 
     override fun getInfoContents(marker: Marker): View? {

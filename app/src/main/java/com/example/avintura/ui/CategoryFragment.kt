@@ -1,5 +1,6 @@
 package com.example.avintura.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -44,16 +45,20 @@ class CategoryFragment : Fragment(), CategoryFavoriteListRecyclerViewAdapter.OnB
     // onDestroyView.
     private val binding get() = _binding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentCategoryBinding.inflate(inflater, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         categoryListViewModelFactory = CategoryListViewModelFactory(
             (requireActivity().application as AvinturaApplication).repository,
             CategoryFragmentArgs.fromBundle(requireArguments()).category
         )
         categoryListViewModel = ViewModelProvider(this, categoryListViewModelFactory)[CategoryListViewModel::class.java]
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentCategoryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
